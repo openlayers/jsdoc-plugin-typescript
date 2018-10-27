@@ -1,0 +1,15 @@
+{
+  "name": "jsdoc-plugin-typescript",
+  "version": "1.0.0",
+  "description": "Plugin to make TypeScript's JSDoc type annotations work with JSDoc",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["jsdoc", "typescript"],
+  "license": "BSD-2-Clause",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/openlayers/jsdoc-plugin-typescript.git"
+  }
+}
