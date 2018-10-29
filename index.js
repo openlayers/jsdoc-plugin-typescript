@@ -15,8 +15,9 @@ if (!fs.existsSync(moduleRootAbsolute)) {
   throw new Error('Directory "' + moduleRootAbsolute + '" does not exist. Check the "typescript.moduleRoot" config option for jsdoc-plugin-typescript');
 }
 
-const importRegEx = /(typeof )?import\("([^"]*)"\)\.([^ \.\|\}><,\)=\n]*)([ \.\|\}><,\)=\n])/g;
+const importRegEx = /import\("([^"]*)"\)\.([^ \.\|\}><,\)=\n]*)([ \.\|\}><,\)=\n])/g;
 const typedefRegEx = /@typedef \{[^\}]*\} ([^ \r?\n?]*)/;
+const noClassdescRegEx = /@(typedef|module|type)/;
 
 const moduleInfos = {};
 const fileNodes = {};
@@ -98,21 +99,50 @@ exports.astNodeVisitor = {
               };
             }
 
-            // Add class inheritance information because JSDoc does not honor
-            // the ES6 class's `extends` keyword
-            if (node.superClass && node.leadingComments) {
-              const leadingComment = node.leadingComments[node.leadingComments.length - 1];
-              const lines = leadingComment.value.split(/\r?\n/);
-              lines.push(lines[lines.length - 1]);
-              const identifier = identifiers[node.superClass.name];
-              if (identifier) {
-                const absolutePath = path.resolve(path.dirname(currentSourceName), identifier.value);
-                const moduleId = path.relative(path.join(process.cwd(), moduleRoot), absolutePath).replace(/\.js$/, '');
-                const exportName = identifier.defaultImport ? getDefaultExportName(moduleId, parser) : node.superClass.name;
-                const delimiter = identifier.defaultImport ? '~' : getDelimiter(moduleId, exportName, parser);
-                lines[lines.length - 2] = ' * @extends ' + `module:${moduleId}${exportName ? delimiter + exportName : ''}`;
-              } else {
-                lines[lines.length - 2] = ' * @extends ' + node.superClass.name;
+            if (!node.leadingComments) {
+              node.leadingComments = [];
+              // Restructure named exports of classes so only the class, but not
+              // the export are documented
+              if (node.parent && node.parent.type === 'ExportNamedDeclaration' && node.parent.leadingComments) {
+                for (let i = node.parent.leadingComments.length - 1; i >= 0; --i) {
+                  const comment = node.parent.leadingComments[i];
+                  if (comment.value.indexOf('@classdesc') !== -1 || !noClassdescRegEx.test(comment.value)) {
+                    node.leadingComments.push(comment);
+                    node.parent.leadingComments.splice(i, 1);
+                    const ignore = parser.astBuilder.build('/** @ignore */').comments[0];
+                    node.parent.leadingComments.push(ignore);
+                  }
+                }
+              }
+            }
+            const leadingComments = node.leadingComments;
+            if (leadingComments.length === 0 || leadingComments[leadingComments.length - 1].value.indexOf('@classdesc') === -1 &&
+                noClassdescRegEx.test(leadingComments[leadingComments.length - 1].value)) {
+              // Create a suitable comment node if we don't have one on the class yet
+              const comment = parser.astBuilder.build('/**\n */', 'helper').comments[0];
+              node.leadingComments.push(comment);
+            }
+            const leadingComment = leadingComments[node.leadingComments.length - 1];
+            const lines = leadingComment.value.split(/\r?\n/);
+            // Add @classdesc to make JSDoc show the class description
+            if (leadingComment.value.indexOf('@classdesc') === -1) {
+              lines[0] += ' @classdesc';
+            }
+            if (node.superClass) {
+              // Add class inheritance information because JSDoc does not honor
+              // the ES6 class's `extends` keyword
+              if (leadingComment.value.indexOf('@extends') === -1) {
+                lines.push(lines[lines.length - 1]);
+                const identifier = identifiers[node.superClass.name];
+                if (identifier) {
+                  const absolutePath = path.resolve(path.dirname(currentSourceName), identifier.value);
+                  const moduleId = path.relative(path.join(process.cwd(), moduleRoot), absolutePath).replace(/\.js$/, '');
+                  const exportName = identifier.defaultImport ? getDefaultExportName(moduleId, parser) : node.superClass.name;
+                  const delimiter = identifier.defaultImport ? '~' : getDelimiter(moduleId, exportName, parser);
+                  lines[lines.length - 2] = ' * @extends ' + `module:${moduleId}${exportName ? delimiter + exportName : ''}`;
+                } else {
+                  lines[lines.length - 2] = ' * @extends ' + node.superClass.name;
+                }
               }
               leadingComment.value = lines.join('\n');
             }
@@ -122,9 +152,9 @@ exports.astNodeVisitor = {
       }
       if (node.comments) {
         node.comments.forEach(comment => {
-          //TODO Handle typeof, to indicate that a constructor instead of an
-          // instance is needed.
-          comment.value = comment.value.replace(/typeof /g, '');
+          // Replace typeof Foo with Class<Foo>
+          comment.value = comment.value.replace(/typeof ([^,\|\}\>]*)([,\|\}\>])/g, 'Class<$1>$2');
+          debugger
 
           // Convert `import("path/to/module").export` to
           // `module:path/to/module~Name`
@@ -132,17 +162,17 @@ exports.astNodeVisitor = {
           while ((importMatch = importRegEx.exec(comment.value))) {
             importRegEx.lastIndex = 0;
             let replacement;
-            if (importMatch[2].charAt(0) !== '.') {
+            if (importMatch[1].charAt(0) !== '.') {
               // simplified replacement for external packages
-              replacement = `module:${importMatch[2]}${importMatch[3] === 'default' ? '' : '~' + importMatch[3]}`;
+              replacement = `module:${importMatch[1]}${importMatch[2] === 'default' ? '' : '~' + importMatch[2]}`;
             } else {
-              const rel = path.resolve(path.dirname(currentSourceName), importMatch[2]);
+              const rel = path.resolve(path.dirname(currentSourceName), importMatch[1]);
               const importModule = path.relative(path.join(process.cwd(), moduleRoot), rel).replace(/\.js$/, '');
-              const exportName = importMatch[3] === 'default' ? getDefaultExportName(importModule, parser) : importMatch[3];
-              const delimiter = importMatch[3] === 'default' ? '~': getDelimiter(importModule, exportName, parser);
+              const exportName = importMatch[2] === 'default' ? getDefaultExportName(importModule, parser) : importMatch[2];
+              const delimiter = importMatch[2] === 'default' ? '~': getDelimiter(importModule, exportName, parser);
               replacement = `module:${importModule}${exportName ? delimiter + exportName : ''}`;
             }
-            comment.value = comment.value.replace(importMatch[0], replacement + importMatch[4]);
+            comment.value = comment.value.replace(importMatch[0], replacement + importMatch[3]);
           }
 
           // Treat `@typedef`s like named exports
@@ -155,7 +185,7 @@ exports.astNodeVisitor = {
 
           // Replace local types with the full `module:` path
           Object.keys(identifiers).forEach(key => {
-            const regex = new RegExp(`(@fires |[\{<\|,] ?)${key}`, 'g');
+            const regex = new RegExp(`(@fires |[\{<\|,] ?!?)${key}`, 'g');
             if (regex.test(comment.value)) {
               const identifier = identifiers[key];
               const absolutePath = path.resolve(path.dirname(currentSourceName), identifier.value);

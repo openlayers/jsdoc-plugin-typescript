@@ -29,7 +29,11 @@ In the above snippet, `"src"` is the directory that contains the source files. I
 
 ## What this plugin does
 
-Types defined in a project are converted to a JSDoc module paths, so they can be documented and linked properly. In addition to types that are used in the same file that they are defined in, imported types are also supported.
+When using the `class` keyword for defining classes (required by TypeScript), JSDoc requires `@classdesc` and `@extends` annotations. With this plugin, no `@classdesc` and `@extends` annotations are needed.
+
+Types defined in a project are converted to JSDoc module paths, so they can be documented and linked properly.
+
+In addition to types that are used in the same file that they are defined in, imported types are also supported.
 
 TypeScript and JSDoc use a different syntax for imported types:
 
@@ -49,6 +53,13 @@ TypeScript and JSDoc use a different syntax for imported types:
  */
 ```
 
+**typeof type:**
+```js
+/**
+ * @type {typeof import("./path/to/module").exportName}
+ */
+```
+
 ### JSDoc
 
 **Named export:**
@@ -65,11 +76,18 @@ TypeScript and JSDoc use a different syntax for imported types:
  */
 ```
 
-This syntax is also used when refering to types of `@typedef`s and `@enum`s.
+This syntax is also used when referring to types of `@typedef`s and `@enum`s.
 
 **Anonymous default export:**
 ```js
 /**
  * @type {module:path/to/module}
+ */
+```
+
+**typeof type:**
+```js
+/**
+ * @type {Class<module:path/to/module.exportName>}
  */
 ```
