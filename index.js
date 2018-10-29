@@ -28,24 +28,25 @@ function getModuleInfo(moduleId, parser) {
       namedExports: {}
     };
     if (!fileNodes[moduleId]) {
-      const classDeclarations = {};
       const absolutePath = path.join(process.cwd(), moduleRoot, moduleId + '.js');
       const file = fs.readFileSync(absolutePath, 'UTF-8');
-      const node = fileNodes[moduleId] = parser.astBuilder.build(file, absolutePath);
-      if (node.program && node.program.body) {
-        const nodes = node.program.body;
-        for (let i = 0, ii = nodes.length; i < ii; ++i) {
-          const node = nodes[i];
-          if (node.type === 'ClassDeclaration') {
-            classDeclarations[node.id.name] = node;
-          } else if (node.type === 'ExportDefaultDeclaration') {
-            const classDeclaration = classDeclarations[node.declaration.name];
-            if (classDeclaration) {
-              moduleInfo.defaultExport = classDeclaration.id.name;
-            }
-          } else if (node.type === 'ExportNamedDeclaration' && node.declaration && node.declaration.type === 'ClassDeclaration') {
-            moduleInfo.namedExports[node.declaration.id.name] = true;
+      fileNodes[moduleId] = parser.astBuilder.build(file, absolutePath);
+    }
+    const node = fileNodes[moduleId];
+    if (node.program && node.program.body) {
+      const classDeclarations = {};
+      const nodes = node.program.body;
+      for (let i = 0, ii = nodes.length; i < ii; ++i) {
+        const node = nodes[i];
+        if (node.type === 'ClassDeclaration') {
+          classDeclarations[node.id.name] = node;
+        } else if (node.type === 'ExportDefaultDeclaration') {
+          const classDeclaration = classDeclarations[node.declaration.name];
+          if (classDeclaration) {
+            moduleInfo.defaultExport = classDeclaration.id.name;
           }
+        } else if (node.type === 'ExportNamedDeclaration' && node.declaration && node.declaration.type === 'ClassDeclaration') {
+          moduleInfo.namedExports[node.declaration.id.name] = true;
         }
       }
     }
@@ -154,7 +155,6 @@ exports.astNodeVisitor = {
         node.comments.forEach(comment => {
           // Replace typeof Foo with Class<Foo>
           comment.value = comment.value.replace(/typeof ([^,\|\}\>]*)([,\|\}\>])/g, 'Class<$1>$2');
-          debugger
 
           // Convert `import("path/to/module").export` to
           // `module:path/to/module~Name`
