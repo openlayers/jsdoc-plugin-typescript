@@ -167,7 +167,7 @@ exports.astNodeVisitor = {
               replacement = `module:${importMatch[1]}${importMatch[2] === 'default' ? '' : '~' + importMatch[2]}`;
             } else {
               const rel = path.resolve(path.dirname(currentSourceName), importMatch[1]);
-              const importModule = path.relative(path.join(process.cwd(), moduleRoot), rel).replace(/\.js$/, '');
+              const importModule = path.relative(path.join(process.cwd(), moduleRoot), rel).replace(/\.js$/, '').replace(/\\/g, '/');
               const exportName = importMatch[2] === 'default' ? getDefaultExportName(importModule, parser) : importMatch[2];
               const delimiter = importMatch[2] === 'default' ? '~': getDelimiter(importModule, exportName, parser);
               replacement = `module:${importModule}${exportName ? delimiter + exportName : ''}`;
@@ -189,7 +189,7 @@ exports.astNodeVisitor = {
             if (regex.test(comment.value)) {
               const identifier = identifiers[key];
               const absolutePath = path.resolve(path.dirname(currentSourceName), identifier.value);
-              const moduleId = path.relative(path.join(process.cwd(), moduleRoot), absolutePath).replace(/\.js$/, '');
+              const moduleId = path.relative(path.join(process.cwd(), moduleRoot), absolutePath).replace(/\.js$/, '').replace(/\\/g, '/');
               const exportName = identifier.defaultImport ? getDefaultExportName(moduleId, parser) : key;
               const delimiter = identifier.defaultImport ? '~' : getDelimiter(moduleId, exportName, parser);
               const replacement = `module:${moduleId}${exportName ? delimiter + exportName : ''}`;
