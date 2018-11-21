@@ -18,6 +18,7 @@ if (!fs.existsSync(moduleRootAbsolute)) {
 const importRegEx = /import\(["']([^"']*)["']\)\.([^ \.\|\}><,\)=\n]*)([ \.\|\}><,\)=\n])/g;
 const typedefRegEx = /@typedef \{[^\}]*\} ([^ \r?\n?]*)/;
 const noClassdescRegEx = /@(typedef|module|type)/;
+const slashRegEx = /\\/g;
 
 const moduleInfos = {};
 const fileNodes = {};
@@ -140,7 +141,7 @@ exports.astNodeVisitor = {
                   const moduleId = path.relative(path.join(process.cwd(), moduleRoot), absolutePath).replace(/\.js$/, '');
                   const exportName = identifier.defaultImport ? getDefaultExportName(moduleId, parser) : node.superClass.name;
                   const delimiter = identifier.defaultImport ? '~' : getDelimiter(moduleId, exportName, parser);
-                  lines[lines.length - 2] = ' * @extends ' + `module:${moduleId}${exportName ? delimiter + exportName : ''}`;
+                  lines[lines.length - 2] = ' * @extends ' + `module:${moduleId.replace(slashRegEx, '/')}${exportName ? delimiter + exportName : ''}`;
                 } else {
                   lines[lines.length - 2] = ' * @extends ' + node.superClass.name;
                 }
@@ -167,10 +168,10 @@ exports.astNodeVisitor = {
               replacement = `module:${importMatch[1]}${importMatch[2] === 'default' ? '' : '~' + importMatch[2]}`;
             } else {
               const rel = path.resolve(path.dirname(currentSourceName), importMatch[1]);
-              const importModule = path.relative(path.join(process.cwd(), moduleRoot), rel).replace(/\.js$/, '');
-              const exportName = importMatch[2] === 'default' ? getDefaultExportName(importModule, parser) : importMatch[2];
-              const delimiter = importMatch[2] === 'default' ? '~': getDelimiter(importModule, exportName, parser);
-              replacement = `module:${importModule}${exportName ? delimiter + exportName : ''}`;
+              const moduleId = path.relative(path.join(process.cwd(), moduleRoot), rel).replace(/\.js$/, '');
+              const exportName = importMatch[2] === 'default' ? getDefaultExportName(moduleId, parser) : importMatch[2];
+              const delimiter = importMatch[2] === 'default' ? '~': getDelimiter(moduleId, exportName, parser);
+              replacement = `module:${moduleId.replace(slashRegEx, '/')}${exportName ? delimiter + exportName : ''}`;
             }
             comment.value = comment.value.replace(importMatch[0], replacement + importMatch[3]);
           }
@@ -192,7 +193,7 @@ exports.astNodeVisitor = {
               const moduleId = path.relative(path.join(process.cwd(), moduleRoot), absolutePath).replace(/\.js$/, '');
               const exportName = identifier.defaultImport ? getDefaultExportName(moduleId, parser) : key;
               const delimiter = identifier.defaultImport ? '~' : getDelimiter(moduleId, exportName, parser);
-              const replacement = `module:${moduleId}${exportName ? delimiter + exportName : ''}`;
+              const replacement = `module:${moduleId.replace(slashRegEx, '/')}${exportName ? delimiter + exportName : ''}`;
               comment.value = comment.value.replace(regex, '$1' + replacement);
             }
           });
