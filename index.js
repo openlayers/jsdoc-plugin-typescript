@@ -30,6 +30,9 @@ function getModuleInfo(moduleId, parser) {
     };
     if (!fileNodes[moduleId]) {
       const absolutePath = path.join(process.cwd(), moduleRoot, moduleId + '.js');
+      if (!fs.existsSync(absolutePath)) {
+        return null;
+      }
       const file = fs.readFileSync(absolutePath, 'UTF-8');
       fileNodes[moduleId] = parser.astBuilder.build(file, absolutePath);
     }
@@ -139,9 +142,11 @@ exports.astNodeVisitor = {
                 if (identifier) {
                   const absolutePath = path.resolve(path.dirname(currentSourceName), identifier.value);
                   const moduleId = path.relative(path.join(process.cwd(), moduleRoot), absolutePath).replace(/\.js$/, '');
-                  const exportName = identifier.defaultImport ? getDefaultExportName(moduleId, parser) : node.superClass.name;
-                  const delimiter = identifier.defaultImport ? '~' : getDelimiter(moduleId, exportName, parser);
-                  lines[lines.length - 2] = ' * @extends ' + `module:${moduleId.replace(slashRegEx, '/')}${exportName ? delimiter + exportName : ''}`;
+                  if (getModuleInfo(moduleId, parser)) {
+                    const exportName = identifier.defaultImport ? getDefaultExportName(moduleId, parser) : node.superClass.name;
+                    const delimiter = identifier.defaultImport ? '~' : getDelimiter(moduleId, exportName, parser);
+                    lines[lines.length - 2] = ' * @extends ' + `module:${moduleId.replace(slashRegEx, '/')}${exportName ? delimiter + exportName : ''}`;
+                  }
                 } else {
                   lines[lines.length - 2] = ' * @extends ' + node.superClass.name;
                 }
@@ -169,11 +174,15 @@ exports.astNodeVisitor = {
             } else {
               const rel = path.resolve(path.dirname(currentSourceName), importMatch[1]);
               const moduleId = path.relative(path.join(process.cwd(), moduleRoot), rel).replace(/\.js$/, '');
-              const exportName = importMatch[2] === 'default' ? getDefaultExportName(moduleId, parser) : importMatch[2];
-              const delimiter = importMatch[2] === 'default' ? '~': getDelimiter(moduleId, exportName, parser);
-              replacement = `module:${moduleId.replace(slashRegEx, '/')}${exportName ? delimiter + exportName : ''}`;
+              if (getModuleInfo(moduleId, parser)) {
+                const exportName = importMatch[2] === 'default' ? getDefaultExportName(moduleId, parser) : importMatch[2];
+                const delimiter = importMatch[2] === 'default' ? '~': getDelimiter(moduleId, exportName, parser);
+                replacement = `module:${moduleId.replace(slashRegEx, '/')}${exportName ? delimiter + exportName : ''}`;
+              }
             }
-            comment.value = comment.value.replace(importMatch[0], replacement + importMatch[3]);
+            if (replacement) {
+              comment.value = comment.value.replace(importMatch[0], replacement + importMatch[3]);
+            }
           }
 
           // Treat `@typedef`s like named exports
@@ -191,10 +200,12 @@ exports.astNodeVisitor = {
               const identifier = identifiers[key];
               const absolutePath = path.resolve(path.dirname(currentSourceName), identifier.value);
               const moduleId = path.relative(path.join(process.cwd(), moduleRoot), absolutePath).replace(/\.js$/, '');
-              const exportName = identifier.defaultImport ? getDefaultExportName(moduleId, parser) : key;
-              const delimiter = identifier.defaultImport ? '~' : getDelimiter(moduleId, exportName, parser);
-              const replacement = `module:${moduleId.replace(slashRegEx, '/')}${exportName ? delimiter + exportName : ''}`;
-              comment.value = comment.value.replace(regex, '$1' + replacement);
+              if (getModuleInfo(moduleId, parser)) {
+                const exportName = identifier.defaultImport ? getDefaultExportName(moduleId, parser) : key;
+                const delimiter = identifier.defaultImport ? '~' : getDelimiter(moduleId, exportName, parser);
+                const replacement = `module:${moduleId.replace(slashRegEx, '/')}${exportName ? delimiter + exportName : ''}`;
+                comment.value = comment.value.replace(regex, '$1' + replacement);
+              }
             }
           });
         });
