@@ -15,7 +15,7 @@ if (!fs.existsSync(moduleRootAbsolute)) {
   throw new Error('Directory "' + moduleRootAbsolute + '" does not exist. Check the "typescript.moduleRoot" config option for jsdoc-plugin-typescript');
 }
 
-const importRegEx = /import\(["']([^"']*)["']\)\.([^ \.\|\}><,\)=\n]*)([ \.\|\}><,\)=\n])/g;
+const importRegEx = /import\(["']([^"']*)["']\)\.([^ \.\|\}><,\)=#\n]*)([ \.\|\}><,\)=#\n])/g;
 const typedefRegEx = /@typedef \{[^\}]*\} ([^ \r?\n?]*)/;
 const noClassdescRegEx = /@(typedef|module|type)/;
 const slashRegEx = /\\/g;
