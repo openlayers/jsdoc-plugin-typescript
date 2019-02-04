@@ -136,22 +136,25 @@ exports.astNodeVisitor = {
               lines[0] += ' @classdesc';
             }
             if (node.superClass) {
+              // Remove the `@extends` tag because JSDoc does not does not handle generic type. (`@extends {Base<Type>}`)
+              const extendsIndex = lines.findIndex(line => line.includes('@extends'));
+              if (extendsIndex !== -1) {
+                lines.splice(extendsIndex, 1);
+              }
               // Add class inheritance information because JSDoc does not honor
               // the ES6 class's `extends` keyword
-              if (leadingComment.value.indexOf('@extends') === -1) {
-                lines.push(lines[lines.length - 1]);
-                const identifier = identifiers[node.superClass.name];
-                if (identifier) {
-                  const absolutePath = path.resolve(path.dirname(currentSourceName), identifier.value);
-                  const moduleId = path.relative(path.join(process.cwd(), moduleRoot), absolutePath).replace(/\.js$/, '');
-                  if (getModuleInfo(moduleId, parser)) {
-                    const exportName = identifier.defaultImport ? getDefaultExportName(moduleId, parser) : node.superClass.name;
-                    const delimiter = identifier.defaultImport ? '~' : getDelimiter(moduleId, exportName, parser);
-                    lines[lines.length - 2] = ' * @extends ' + `module:${moduleId.replace(slashRegEx, '/')}${exportName ? delimiter + exportName : ''}`;
-                  }
-                } else {
-                  lines[lines.length - 2] = ' * @extends ' + node.superClass.name;
+              lines.push(lines[lines.length - 1]);
+              const identifier = identifiers[node.superClass.name];
+              if (identifier) {
+                const absolutePath = path.resolve(path.dirname(currentSourceName), identifier.value);
+                const moduleId = path.relative(path.join(process.cwd(), moduleRoot), absolutePath).replace(/\.js$/, '');
+                if (getModuleInfo(moduleId, parser)) {
+                  const exportName = identifier.defaultImport ? getDefaultExportName(moduleId, parser) : node.superClass.name;
+                  const delimiter = identifier.defaultImport ? '~' : getDelimiter(moduleId, exportName, parser);
+                  lines[lines.length - 2] = ' * @extends ' + `module:${moduleId.replace(slashRegEx, '/')}${exportName ? delimiter + exportName : ''}`;
                 }
+              } else {
+                lines[lines.length - 2] = ' * @extends ' + node.superClass.name;
               }
               leadingComment.value = lines.join('\n');
             }
