@@ -200,7 +200,7 @@ exports.astNodeVisitor = {
 
           // Replace local types with the full `module:` path
           Object.keys(identifiers).forEach(key => {
-            const regex = new RegExp(`(@fires |[\{<\|,] ?!?)${key}`, 'g');
+            const regex = new RegExp(`(@event |@fires |[\{<\|,] ?!?)${key}`, 'g');
             if (regex.test(comment.value)) {
               const identifier = identifiers[key];
               const absolutePath = path.resolve(path.dirname(currentSourceName), identifier.value);
