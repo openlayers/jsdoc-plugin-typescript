@@ -1,6 +1,6 @@
 # jsdoc-plugin-typescript
 
-Plugin to make TypeScript's JSDoc type annotations work with JSDoc.
+Plugin to make TypeScript's JSDoc type annotations work with JSDoc. Requires JSDoc v3.6.0 or higher.
 
 ## Installation and use
 

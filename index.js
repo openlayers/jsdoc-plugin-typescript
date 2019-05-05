@@ -2,7 +2,6 @@ const path = require('path');
 const fs = require('fs');
 const env = require('jsdoc/env');
 const addInherited = require('jsdoc/augment').addInherited;
-const indexAll = require('jsdoc/borrow').indexAll;
 
 const config = env.conf.typescript;
 if (!config) {
@@ -223,6 +222,6 @@ exports.astNodeVisitor = {
 exports.handlers = {
   parseComplete: function(e) {
     // Build inheritance chain after adding @extends annotations
-    addInherited(e.doclets, indexAll(e.doclets));
+    addInherited(e.doclets, e.doclets.index);
   }
 }
