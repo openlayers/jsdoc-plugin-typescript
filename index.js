@@ -199,7 +199,7 @@ exports.astNodeVisitor = {
 
           // Replace local types with the full `module:` path
           Object.keys(identifiers).forEach(key => {
-            const regex = new RegExp(`(@event |@fires |[\{<\|,] ?!?)${key}`, 'g');
+            const regex = new RegExp(`@(event |fires |.*[\{<\|,] ?!?)${key}`, 'g');
             if (regex.test(comment.value)) {
               const identifier = identifiers[key];
               const absolutePath = path.resolve(path.dirname(currentSourceName), identifier.value);
@@ -208,7 +208,7 @@ exports.astNodeVisitor = {
                 const exportName = identifier.defaultImport ? getDefaultExportName(moduleId, parser) : key;
                 const delimiter = identifier.defaultImport ? '~' : getDelimiter(moduleId, exportName, parser);
                 const replacement = `module:${moduleId.replace(slashRegEx, '/')}${exportName ? delimiter + exportName : ''}`;
-                comment.value = comment.value.replace(regex, '$1' + replacement);
+                comment.value = comment.value.replace(regex, '@$1' + replacement);
               }
             }
           });
