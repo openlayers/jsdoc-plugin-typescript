@@ -180,7 +180,7 @@ exports.astNodeVisitor = {
               const moduleId = path.relative(path.join(process.cwd(), moduleRoot), rel).replace(/\.js$/, '');
               if (getModuleInfo(moduleId, parser)) {
                 const exportName = importMatch[2] === 'default' ? getDefaultExportName(moduleId, parser) : importMatch[2];
-                const delimiter = importMatch[2] === 'default' ? '~': getDelimiter(moduleId, exportName, parser);
+                const delimiter = importMatch[2] === 'default' ? '~' : getDelimiter(moduleId, exportName, parser);
                 replacement = `module:${moduleId.replace(slashRegEx, '/')}${exportName ? delimiter + exportName : ''}`;
               }
             }
@@ -196,7 +196,9 @@ exports.astNodeVisitor = {
               value: path.basename(currentSourceName)
             };
           }
+        });
 
+        node.comments.forEach(comment => {
           // Replace local types with the full `module:` path
           Object.keys(identifiers).forEach(key => {
             const regex = new RegExp(`@(event |fires |.*[\{<\|,] ?!?)${key}`, 'g');
