@@ -17,7 +17,7 @@ if (!fs.existsSync(moduleRootAbsolute)) {
 }
 
 const importRegEx = /import\(["']([^"']*)["']\)\.([^ \.\|\}><,\)=#\n]*)([ \.\|\}><,\)=#\n])/g;
-const typedefRegEx = /@typedef \{[^\}]*\} ([^ \r?\n?]*)/;
+const typedefRegEx = /@typedef \{[^\}]*\} (\S*)/;
 const noClassdescRegEx = /@(typedef|module|type)/;
 const slashRegEx = /\\/g;
 
@@ -201,7 +201,8 @@ exports.astNodeVisitor = {
         node.comments.forEach(comment => {
           // Replace local types with the full `module:` path
           Object.keys(identifiers).forEach(key => {
-            const regex = new RegExp(`@(event |fires |.*[\{<\|,] ?!?)${key}`, 'g');
+            const regex = new RegExp(`@(event |fires |.*[\{<\|,] ?!?)${key}([}>|,\s])`, 'g');
+
             if (regex.test(comment.value)) {
               const identifier = identifiers[key];
               const absolutePath = path.resolve(path.dirname(currentSourceName), identifier.value);
@@ -210,7 +211,7 @@ exports.astNodeVisitor = {
                 const exportName = identifier.defaultImport ? getDefaultExportName(moduleId, parser) : key;
                 const delimiter = identifier.defaultImport ? '~' : getDelimiter(moduleId, exportName, parser);
                 const replacement = `module:${moduleId.replace(slashRegEx, '/')}${exportName ? delimiter + exportName : ''}`;
-                comment.value = comment.value.replace(regex, '@$1' + replacement);
+                comment.value = comment.value.replace(regex, '@$1' + replacement + '$2');
               }
             }
           });
