@@ -17,7 +17,7 @@ if (!fs.existsSync(moduleRootAbsolute)) {
 }
 
 const importRegEx = /import\(["']([^"']*)["']\)\.([^ \.\|\}><,\)=#\n]*)([ \.\|\}><,\)=#\n])/g;
-const typedefRegEx = /@typedef \{[^\}]*\} ([^ \r?\n?]*)/;
+const typedefRegEx = /@typedef \{[^\}]*\} (\S+)/;
 const noClassdescRegEx = /@(typedef|module|type)/;
 const slashRegEx = /\\/g;
 
@@ -180,7 +180,7 @@ exports.astNodeVisitor = {
               const moduleId = path.relative(path.join(process.cwd(), moduleRoot), rel).replace(/\.js$/, '');
               if (getModuleInfo(moduleId, parser)) {
                 const exportName = importMatch[2] === 'default' ? getDefaultExportName(moduleId, parser) : importMatch[2];
-                const delimiter = importMatch[2] === 'default' ? '~': getDelimiter(moduleId, exportName, parser);
+                const delimiter = importMatch[2] === 'default' ? '~' : getDelimiter(moduleId, exportName, parser);
                 replacement = `module:${moduleId.replace(slashRegEx, '/')}${exportName ? delimiter + exportName : ''}`;
               }
             }
@@ -190,25 +190,34 @@ exports.astNodeVisitor = {
           }
 
           // Treat `@typedef`s like named exports
-          const typedefMatch = comment.value.replace(/\r?\n?\s*\*\s/g, ' ').match(typedefRegEx);
+          const typedefMatch = comment.value.replace(/\s*\*\s*/g, ' ').match(typedefRegEx);
           if (typedefMatch) {
             identifiers[typedefMatch[1]] = {
               value: path.basename(currentSourceName)
             };
           }
+        });
 
+        node.comments.forEach(comment => {
           // Replace local types with the full `module:` path
           Object.keys(identifiers).forEach(key => {
-            const regex = new RegExp(`@(event |fires |.*[\{<\|,] ?!?)${key}`, 'g');
-            if (regex.test(comment.value)) {
-              const identifier = identifiers[key];
-              const absolutePath = path.resolve(path.dirname(currentSourceName), identifier.value);
-              const moduleId = path.relative(path.join(process.cwd(), moduleRoot), absolutePath).replace(/\.js$/, '');
-              if (getModuleInfo(moduleId, parser)) {
-                const exportName = identifier.defaultImport ? getDefaultExportName(moduleId, parser) : key;
-                const delimiter = identifier.defaultImport ? '~' : getDelimiter(moduleId, exportName, parser);
-                const replacement = `module:${moduleId.replace(slashRegEx, '/')}${exportName ? delimiter + exportName : ''}`;
-                comment.value = comment.value.replace(regex, '@$1' + replacement);
+            const eventRegex = new RegExp(`@(event |fires )${key}(\\s*)`, 'g');
+            replace(eventRegex);
+
+            const typeRegex = new RegExp(`@(.*[{<|,]\\s*[!?]?)${key}(=?\\s*[}>|,])`, 'g');
+            replace(typeRegex);
+
+            function replace(regex) {
+              if (regex.test(comment.value)) {
+                const identifier = identifiers[key];
+                const absolutePath = path.resolve(path.dirname(currentSourceName), identifier.value);
+                const moduleId = path.relative(path.join(process.cwd(), moduleRoot), absolutePath).replace(/\.js$/, '');
+                if (getModuleInfo(moduleId, parser)) {
+                  const exportName = identifier.defaultImport ? getDefaultExportName(moduleId, parser) : key;
+                  const delimiter = identifier.defaultImport ? '~' : getDelimiter(moduleId, exportName, parser);
+                  let replacement = `module:${moduleId.replace(slashRegEx, '/')}${exportName ? delimiter + exportName : ''}`;
+                  comment.value = comment.value.replace(regex, '@$1' + replacement + '$2');
+                }
               }
             }
           });
