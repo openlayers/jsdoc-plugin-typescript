@@ -17,7 +17,7 @@ if (!fs.existsSync(moduleRootAbsolute)) {
 }
 
 const importRegEx = /import\(["']([^"']*)["']\)\.([^ \.\|\}><,\)=#\n]*)([ \.\|\}><,\)=#\n])/g;
-const typedefRegEx = /@typedef \{[^\}]*\} (\S*)/;
+const typedefRegEx = /@typedef \{[^\}]*\} (\S+)/;
 const noClassdescRegEx = /@(typedef|module|type)/;
 const slashRegEx = /\\/g;
 
@@ -190,7 +190,7 @@ exports.astNodeVisitor = {
           }
 
           // Treat `@typedef`s like named exports
-          const typedefMatch = comment.value.replace(/\r?\n?\s*\*\s/g, ' ').match(typedefRegEx);
+          const typedefMatch = comment.value.replace(/\s*\*\s*/g, ' ').match(typedefRegEx);
           if (typedefMatch) {
             identifiers[typedefMatch[1]] = {
               value: path.basename(currentSourceName)
@@ -201,7 +201,7 @@ exports.astNodeVisitor = {
         node.comments.forEach(comment => {
           // Replace local types with the full `module:` path
           Object.keys(identifiers).forEach(key => {
-            const regex = new RegExp(`@(event |fires |.*[\{<\|,] ?!?)${key}([}>|,\s])`, 'g');
+            const regex = new RegExp(`@(event |fires |.*[{<|,] ?!?)${key}([}>|,\\s])`, 'g');
 
             if (regex.test(comment.value)) {
               const identifier = identifiers[key];
