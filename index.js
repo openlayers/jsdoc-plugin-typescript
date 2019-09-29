@@ -201,17 +201,23 @@ exports.astNodeVisitor = {
         node.comments.forEach(comment => {
           // Replace local types with the full `module:` path
           Object.keys(identifiers).forEach(key => {
-            const regex = new RegExp(`@(event |fires |.*[{<|,] ?!?)${key}([}>|,\\s])`, 'g');
+            const eventRegex = new RegExp(`@(event |fires )${key}(\\s*)`, 'g');
+            replace(eventRegex);
 
-            if (regex.test(comment.value)) {
-              const identifier = identifiers[key];
-              const absolutePath = path.resolve(path.dirname(currentSourceName), identifier.value);
-              const moduleId = path.relative(path.join(process.cwd(), moduleRoot), absolutePath).replace(/\.js$/, '');
-              if (getModuleInfo(moduleId, parser)) {
-                const exportName = identifier.defaultImport ? getDefaultExportName(moduleId, parser) : key;
-                const delimiter = identifier.defaultImport ? '~' : getDelimiter(moduleId, exportName, parser);
-                const replacement = `module:${moduleId.replace(slashRegEx, '/')}${exportName ? delimiter + exportName : ''}`;
-                comment.value = comment.value.replace(regex, '@$1' + replacement + '$2');
+            const typeRegex = new RegExp(`@(.*[{<|,]\\s*[!?]?)${key}(=?\\s*[}>|,])`, 'g');
+            replace(typeRegex);
+
+            function replace(regex) {
+              if (regex.test(comment.value)) {
+                const identifier = identifiers[key];
+                const absolutePath = path.resolve(path.dirname(currentSourceName), identifier.value);
+                const moduleId = path.relative(path.join(process.cwd(), moduleRoot), absolutePath).replace(/\.js$/, '');
+                if (getModuleInfo(moduleId, parser)) {
+                  const exportName = identifier.defaultImport ? getDefaultExportName(moduleId, parser) : key;
+                  const delimiter = identifier.defaultImport ? '~' : getDelimiter(moduleId, exportName, parser);
+                  let replacement = `module:${moduleId.replace(slashRegEx, '/')}${exportName ? delimiter + exportName : ''}`;
+                  comment.value = comment.value.replace(regex, '@$1' + replacement + '$2');
+                }
               }
             }
           });
