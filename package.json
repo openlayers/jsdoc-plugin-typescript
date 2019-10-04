@@ -17,5 +17,8 @@
   "repository": {
     "type": "git",
     "url": "git://github.com/openlayers/jsdoc-plugin-typescript.git"
+  },
+  "dependencies": {
+    "pegjs": "^0.10.0"
   }
 }

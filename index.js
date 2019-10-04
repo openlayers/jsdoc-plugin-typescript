@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const env = require('jsdoc/env');
 const addInherited = require('jsdoc/augment').addInherited;
+const peg = require("pegjs");
 
 const config = env.conf.typescript;
 if (!config) {
@@ -23,6 +24,28 @@ const slashRegEx = /\\/g;
 
 const moduleInfos = {};
 const fileNodes = {};
+
+const pegRules = fs.readFileSync(path.join(__dirname, "./type_rewrite_peg_rules.txt"), 'utf8');
+const pegBuiltinRules = fs.readFileSync(path.join(__dirname, "./builtin_types_peg_rules.txt"), 'utf8');
+
+function buildTypeRewriteRules(identifiers, parser, currentSourceName) {
+  const keys = Object.keys(identifiers).sort().reverse();
+  let rules = 'RewriteType\n';
+  let first = true;
+  for (const key of keys) {
+    const identifier = identifiers[key];
+    const absolutePath = path.resolve(path.dirname(currentSourceName), identifier.value);
+    const moduleId = path.relative(path.join(process.cwd(), moduleRoot), absolutePath).replace(/\.js$/, '');
+    if (getModuleInfo(moduleId, parser)) {
+      const exportName = identifier.defaultImport ? getDefaultExportName(moduleId, parser) : key;
+      const delimiter = identifier.defaultImport ? '~' : getDelimiter(moduleId, exportName, parser);
+      const replacement = `module:${moduleId.replace(slashRegEx, '/')}${exportName ? delimiter + exportName : ''}`;
+      rules += `  ${first ? '=' : '/'} "${key}" &NoChar { return "${replacement}" }\n`;
+      first = false;
+    }
+  }
+  return pegRules + '\n' + pegBuiltinRules + '\n' + rules;
+}
 
 function getModuleInfo(moduleId, parser) {
   if (!moduleInfos[moduleId]) {
@@ -198,30 +221,16 @@ exports.astNodeVisitor = {
           }
         });
 
-        node.comments.forEach(comment => {
+        if (Object.keys(identifiers).length > 0) {
           // Replace local types with the full `module:` path
-          Object.keys(identifiers).forEach(key => {
-            const eventRegex = new RegExp(`@(event |fires )${key}(\\s*)`, 'g');
-            replace(eventRegex);
 
-            const typeRegex = new RegExp(`@(.*[{<|,]\\s*[!?]?)${key}(=?\\s*[}>|,])`, 'g');
-            replace(typeRegex);
+          const rules = buildTypeRewriteRules(identifiers, parser, currentSourceName);
+          const rewriter = peg.generate(rules);
 
-            function replace(regex) {
-              if (regex.test(comment.value)) {
-                const identifier = identifiers[key];
-                const absolutePath = path.resolve(path.dirname(currentSourceName), identifier.value);
-                const moduleId = path.relative(path.join(process.cwd(), moduleRoot), absolutePath).replace(/\.js$/, '');
-                if (getModuleInfo(moduleId, parser)) {
-                  const exportName = identifier.defaultImport ? getDefaultExportName(moduleId, parser) : key;
-                  const delimiter = identifier.defaultImport ? '~' : getDelimiter(moduleId, exportName, parser);
-                  let replacement = `module:${moduleId.replace(slashRegEx, '/')}${exportName ? delimiter + exportName : ''}`;
-                  comment.value = comment.value.replace(regex, '@$1' + replacement + '$2');
-                }
-              }
-            }
+          node.comments.forEach(comment => {
+            comment.value = rewriter.parse(comment.value);
           });
-        });
+        }
       }
     }
   }
