@@ -26,9 +26,6 @@ const fileNodes = {};
 
 function getModuleInfo(moduleId, parser) {
   if (!moduleInfos[moduleId]) {
-    const moduleInfo = moduleInfos[moduleId] = {
-      namedExports: {}
-    };
     if (!fileNodes[moduleId]) {
       const absolutePath = path.join(process.cwd(), moduleRoot, moduleId + '.js');
       if (!fs.existsSync(absolutePath)) {
@@ -37,6 +34,9 @@ function getModuleInfo(moduleId, parser) {
       const file = fs.readFileSync(absolutePath, 'UTF-8');
       fileNodes[moduleId] = parser.astBuilder.build(file, absolutePath);
     }
+    const moduleInfo = moduleInfos[moduleId] = {
+      namedExports: {}
+    };
     const node = fileNodes[moduleId];
     if (node.program && node.program.body) {
       const classDeclarations = {};
@@ -201,10 +201,10 @@ exports.astNodeVisitor = {
         node.comments.forEach(comment => {
           // Replace local types with the full `module:` path
           Object.keys(identifiers).forEach(key => {
-            const eventRegex = new RegExp(`@(event |fires )${key}(\\s*)`, 'g');
+            const eventRegex = new RegExp(`@(event |fires )${key}([^A-Za-z])`, 'g');
             replace(eventRegex);
 
-            const typeRegex = new RegExp(`@(.*[{<|,]\\s*[!?]?)${key}(=?\\s*[}>|,])`, 'g');
+            const typeRegex = new RegExp(`@(.*[{<|,(!?:]\\s*)${key}([A-Za-z].*?\}|\})`, 'g');
             replace(typeRegex);
 
             function replace(regex) {
