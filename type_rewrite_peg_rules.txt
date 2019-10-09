@@ -15,7 +15,8 @@ Line
   = _ "*" _ TypeExpecting _ ComplexType ("#" [^\n\r]*)?
   / _ "*" _ CurlyTypeExpecting _ CurlyType [^\n\r]*
   / _ "*" _ !TypeExpecting !CurlyTypeExpecting [^\n\r]*
-  / _ [^\n\r]* [^*\n\r]*
+  / _ [^\n\r*] [^\n\r]*
+  / _
 
 CurlyTypeExpecting
   = "@param"
@@ -38,15 +39,13 @@ TypeList
   / ComplexType
 
 ComplexType
-  = [?!]? ComplexTypeUnmodified "="?
+  = [?!]? ("...")? ComplexTypeUnmodified "="?
   / "?" 								// short curcuit for the builtin type "?"
 
 ComplexTypeUnmodified
   = "(" _ TypeList _ ")"
-  / Spread
-  / GenericType
   / FunctionType
-  / SimpleType
+  / SimpleType ("."? "<" ParameterList ">")?
   / InlineObjectType
 
 InlineObjectType
@@ -57,39 +56,42 @@ InlineObjectPropertyList
   / InlineObjectProperty
 
 InlineObjectProperty
-  = [A-Za-z][A-Za-z0-9_]* _ ":" _b ComplexType
-
-Spread
-  = "..." ComplexType
+  = Word _ ":" _b ComplexTypeUnmodified
 
 FunctionType
-  = "function" _ "(" _ (FunctionThis? _b ParameterList)? ")" (":" _b ComplexType)?
-
-FunctionThis
-  = "this:"
-  / "new:"
-
-SimpleType
-  = RewriteType
-  / BuiltinType
-  / ConvertedType
-  / GenericParameter
-
-NoChar
- = [^A-Za-z0-9_]
-
-GenericType
-  = SimpleType "."? "<" ParameterList ">"
+  = "function" _ "(" _ (("this:" / "new:")? _b ParameterList)? ")" (_ ":" _b ComplexType)?
 
 ParameterList
   = TypeList "," _b ParameterList
   / TypeList
 
-ConvertedType
-  = "module:" [a-zA-Z/]+ (("~" / ".") [a-zA-Z]+)? &NoChar
+SimpleType
+  = RewriteType
+  / PrimitiveType
+  / SpecialType
+  / ConvertedType
+  / TemplateParameter
+  / BuiltinType
 
-GenericParameter
-  = [A-Z] &NoChar
+ConvertedType
+  = "module:" [a-zA-Z/-]+ (("~" / ".") [a-zA-Z]+)? & NoChar
+
+PrimitiveType
+  = "number" & NoChar
+  / "boolean" & NoChar
+  / "string" & NoChar
+  / "Array" & NoChar
+  / "Object" & NoChar
+  / "undefined" & NoChar
+  / "null" & NoChar
+
+SpecialType
+  = "*" & NoChar
+  / "any" & NoChar
+  / "void" & NoChar
+  / "Partial" & NoChar
+  / "Class" & NoChar
+  // "?" will be captured by a special rule above
 
 _b "break or whitespace"
   = _ "\n" _ "*" _
@@ -97,3 +99,9 @@ _b "break or whitespace"
 
 _ "whitespace"
   = [ \t]*
+
+NoChar
+  = [^A-Za-z0-9_]
+
+Word
+  = [A-Za-z_][A-Za-z0-9_]* & NoChar

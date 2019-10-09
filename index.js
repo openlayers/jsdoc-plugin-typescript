@@ -18,21 +18,40 @@ if (!fs.existsSync(moduleRootAbsolute)) {
 }
 
 const importRegEx = /import\(["']([^"']*)["']\)\.([^ \.\|\}><,\)=#\n]*)([ \.\|\}><,\)=#\n])/g;
-const typedefRegEx = /@typedef \{[^\}]*\} (\S+)/;
+const typedefRegEx = /@typedef \{[^\}]*\} (\S+)/g;
 const noClassdescRegEx = /@(typedef|module|type)/;
 const slashRegEx = /\\/g;
 
 const moduleInfos = {};
 const fileNodes = {};
+let differences = 0;
 
-const pegRules = fs.readFileSync(path.join(__dirname, "./type_rewrite_peg_rules.txt"), 'utf8');
-const pegBuiltinRules = fs.readFileSync(path.join(__dirname, "./builtin_types_peg_rules.txt"), 'utf8');
+const pegRules = fs.readFileSync(path.join(__dirname, "./type_rewrite_peg_rules.txt"), 'utf8')
+  + '\n\n' + generateBuiltinTypeRules();
+
+function makeRule(name, rules) {
+  return name + '\n  = ' + rules.sort().reverse().join('\n  / ') + '\n';
+}
+
+function generateBuiltinTypeRules() {
+  const types = [];
+  function readFile(name) {
+    const path = require.resolve(name, { paths: [__dirname, moduleRootAbsolute]});
+    const content = fs.readFileSync(path, 'utf8');
+    const typeMatches = content.matchAll(/^(interface|type)\s*(\w*)/gm);
+    for (const match of typeMatches) {
+      types.push(`"${match[2]}"`);
+    }
+  }
+  readFile('typescript/lib/lib.dom.d.ts');
+  readFile('typescript/lib/lib.es5.d.ts');
+  readFile('typescript/lib/lib.webworker.d.ts');
+  return `BuiltinType\n  = w:Word & { return [${types.sort().join(',')}].includes(flatten(w)) }`
+}
 
 function buildTypeRewriteRules(identifiers, parser, currentSourceName) {
-  const keys = Object.keys(identifiers).sort().reverse();
-  let rules = 'RewriteType\n';
-  let first = true;
-  for (const key of keys) {
+  const rules = [];
+  for (const key of Object.keys(identifiers)) {
     const identifier = identifiers[key];
     const absolutePath = path.resolve(path.dirname(currentSourceName), identifier.value);
     const moduleId = path.relative(path.join(process.cwd(), moduleRoot), absolutePath).replace(/\.js$/, '');
@@ -40,18 +59,16 @@ function buildTypeRewriteRules(identifiers, parser, currentSourceName) {
       const exportName = identifier.defaultImport ? getDefaultExportName(moduleId, parser) : key;
       const delimiter = identifier.defaultImport ? '~' : getDelimiter(moduleId, exportName, parser);
       const replacement = `module:${moduleId.replace(slashRegEx, '/')}${exportName ? delimiter + exportName : ''}`;
-      rules += `  ${first ? '=' : '/'} "${key}" &NoChar { return "${replacement}" }\n`;
-      first = false;
+      rules.push(`"${key}" & NoChar { return "${replacement}" }`);
+    } else {
+      rules.push(`"${key}" & NoChar`);
     }
   }
-  return pegRules + '\n' + pegBuiltinRules + '\n' + rules;
+  return pegRules + '\n\n' + makeRule('RewriteType', rules);
 }
 
 function getModuleInfo(moduleId, parser) {
   if (!moduleInfos[moduleId]) {
-    const moduleInfo = moduleInfos[moduleId] = {
-      namedExports: {}
-    };
     if (!fileNodes[moduleId]) {
       const absolutePath = path.join(process.cwd(), moduleRoot, moduleId + '.js');
       if (!fs.existsSync(absolutePath)) {
@@ -60,6 +77,9 @@ function getModuleInfo(moduleId, parser) {
       const file = fs.readFileSync(absolutePath, 'UTF-8');
       fileNodes[moduleId] = parser.astBuilder.build(file, absolutePath);
     }
+    const moduleInfo = moduleInfos[moduleId] = {
+      namedExports: {}
+    };
     const node = fileNodes[moduleId];
     if (node.program && node.program.body) {
       const classDeclarations = {};
@@ -98,12 +118,17 @@ exports.astNodeVisitor = {
       const modulePath = path.relative(path.join(process.cwd(), moduleRoot), currentSourceName).replace(/\.js$/, '');
       fileNodes[modulePath] = node;
       const identifiers = {};
+      let templateParameters = [];
       if (node.program && node.program.body) {
         const nodes = node.program.body;
         for (let i = 0, ii = nodes.length; i < ii; ++i) {
           let node = nodes[i];
+          let leadingComments = node.leadingComments;
           if (node.type === 'ExportNamedDeclaration' && node.declaration) {
             node = node.declaration;
+            if (node.leadingComments) {
+              leadingComments = node.leadingComments;
+            }
           }
           if (node.type === 'ImportDeclaration') {
             node.specifiers.forEach(specifier => {
@@ -121,6 +146,21 @@ exports.astNodeVisitor = {
                 default:
               }
             });
+          } else if (node.type === 'VariableDeclaration') {
+            for (const declaration of node.declarations) {
+              let declarationComments = leadingComments;
+              if (declaration.leadingComments) {
+                declarationComments = declaration.leadingComments;
+              }
+              if (declarationComments && declarationComments.length > 0) {
+                const comment = declarationComments[declarationComments.length - 1].value;
+                if (/@enum/.test(comment)) {
+                  identifiers[declaration.id.name] = {
+                    value: path.basename(currentSourceName)
+                  };
+                }
+              }
+            }
           } else if (node.type === 'ClassDeclaration') {
             if (node.id && node.id.name) {
               identifiers[node.id.name] = {
@@ -213,22 +253,69 @@ exports.astNodeVisitor = {
           }
 
           // Treat `@typedef`s like named exports
-          const typedefMatch = comment.value.replace(/\s*\*\s*/g, ' ').match(typedefRegEx);
-          if (typedefMatch) {
-            identifiers[typedefMatch[1]] = {
+          const typedefMatches = comment.value.replace(/\s*\*\s*/g, ' ').matchAll(typedefRegEx);
+          for (const match of typedefMatches) {
+            identifiers[match[1]] = {
               value: path.basename(currentSourceName)
             };
+          }
+
+          // Gather template Parameters
+          const templateMatches = comment.value.replace(/\s*,\s*/g, ',').matchAll(/@template\s+(?:\{[^}]+}\s+)?([\w,]+)/g);
+          for (const match of templateMatches) {
+            templateParameters = templateParameters.concat(match[1].split(','));
           }
         });
 
         if (Object.keys(identifiers).length > 0) {
           // Replace local types with the full `module:` path
 
-          const rules = buildTypeRewriteRules(identifiers, parser, currentSourceName);
+          let templateRule = '';
+          if (templateParameters.length > 0) {
+            templateRule = makeRule('TemplateParameter', templateParameters.map(t => `"${t}" & NoChar`));
+          } else {
+            templateRule = 'TemplateParameter = & { return false }\n';
+          }
+
+          const rules = buildTypeRewriteRules(identifiers, parser, currentSourceName)
+            + '\n' + templateRule;
+
           const rewriter = peg.generate(rules);
 
           node.comments.forEach(comment => {
+            const before = comment.value;
+
             comment.value = rewriter.parse(comment.value);
+
+            let regexVersion = before;
+
+            Object.keys(identifiers).forEach(key => {
+              const eventRegex = new RegExp(`@(event |fires )${key}([^A-Za-z])`, 'g');
+              replace(eventRegex);
+
+              const typeRegex = new RegExp(`@(.*[{<|,(!?:]\\s*)${key}([^A-Za-z].*?\}|\})`, 'g');
+              replace(typeRegex);
+
+              function replace(regex) {
+                if (regex.test(regexVersion)) {
+                  const identifier = identifiers[key];
+                  const absolutePath = path.resolve(path.dirname(currentSourceName), identifier.value);
+                  const moduleId = path.relative(path.join(process.cwd(), moduleRoot), absolutePath).replace(/\.js$/, '');
+                  if (getModuleInfo(moduleId, parser)) {
+                    const exportName = identifier.defaultImport ? getDefaultExportName(moduleId, parser) : key;
+                    const delimiter = identifier.defaultImport ? '~' : getDelimiter(moduleId, exportName, parser);
+                    let replacement = `module:${moduleId.replace(slashRegEx, '/')}${exportName ? delimiter + exportName : ''}`;
+                    regexVersion = regexVersion.replace(regex, '@$1' + replacement + '$2');
+                  }
+                }
+              }
+            });
+
+            if (comment.value !== regexVersion) {
+              console.log(before);
+              console.log(comment.value);
+              differences++;
+            }
           });
         }
       }
@@ -241,5 +328,6 @@ exports.handlers = {
   parseComplete: function(e) {
     // Build inheritance chain after adding @extends annotations
     addInherited(e.doclets, e.doclets.index);
+    console.log(`Differences: ${differences}`);
   }
 }
