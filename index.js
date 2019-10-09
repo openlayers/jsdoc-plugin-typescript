@@ -17,7 +17,7 @@ if (!fs.existsSync(moduleRootAbsolute)) {
 }
 
 const importRegEx = /import\(["']([^"']*)["']\)\.([^ \.\|\}><,\)=#\n]*)([ \.\|\}><,\)=#\n])/g;
-const typedefRegEx = /@typedef \{[^\}]*\} (\S+)/;
+const typedefRegEx = /@typedef \{[^\}]*\} (\S+)/g;
 const noClassdescRegEx = /@(typedef|module|type)/;
 const slashRegEx = /\\/g;
 
@@ -79,8 +79,12 @@ exports.astNodeVisitor = {
         const nodes = node.program.body;
         for (let i = 0, ii = nodes.length; i < ii; ++i) {
           let node = nodes[i];
+          let leadingComments = node.leadingComments;
           if (node.type === 'ExportNamedDeclaration' && node.declaration) {
             node = node.declaration;
+            if (node.leadingComments) {
+              leadingComments = node.leadingComments;
+            }
           }
           if (node.type === 'ImportDeclaration') {
             node.specifiers.forEach(specifier => {
@@ -98,6 +102,21 @@ exports.astNodeVisitor = {
                 default:
               }
             });
+          } else if (node.type === 'VariableDeclaration') {
+            for (const declaration of node.declarations) {
+              let declarationComments = leadingComments;
+              if (declaration.leadingComments) {
+                declarationComments = declaration.leadingComments;
+              }
+              if (declarationComments && declarationComments.length > 0) {
+                const comment = declarationComments[declarationComments.length - 1].value;
+                if (/@enum/.test(comment)) {
+                  identifiers[declaration.id.name] = {
+                    value: path.basename(currentSourceName)
+                  };
+                }
+              }
+            }
           } else if (node.type === 'ClassDeclaration') {
             if (node.id && node.id.name) {
               identifiers[node.id.name] = {
@@ -190,9 +209,9 @@ exports.astNodeVisitor = {
           }
 
           // Treat `@typedef`s like named exports
-          const typedefMatch = comment.value.replace(/\s*\*\s*/g, ' ').match(typedefRegEx);
-          if (typedefMatch) {
-            identifiers[typedefMatch[1]] = {
+          const typedefMatches = comment.value.replace(/\s*\*\s*/g, ' ').matchAll(typedefRegEx);
+          for (const match of typedefMatches) {
+            identifiers[match[1]] = {
               value: path.basename(currentSourceName)
             };
           }
@@ -204,7 +223,7 @@ exports.astNodeVisitor = {
             const eventRegex = new RegExp(`@(event |fires )${key}([^A-Za-z])`, 'g');
             replace(eventRegex);
 
-            const typeRegex = new RegExp(`@(.*[{<|,(!?:]\\s*)${key}([A-Za-z].*?\}|\})`, 'g');
+            const typeRegex = new RegExp(`@(.*[{<|,(!?:]\\s*)${key}([^A-Za-z].*?\}|\})`, 'g');
             replace(typeRegex);
 
             function replace(regex) {
