@@ -12,10 +12,14 @@
   ],
   "license": "BSD-2-Clause",
   "peerDependencies": {
-    "jsdoc": ">=3.6.0"
+    "jsdoc": ">=3.6.0",
+    "typescript": "3.*"
   },
   "repository": {
     "type": "git",
     "url": "git://github.com/openlayers/jsdoc-plugin-typescript.git"
+  },
+  "dependencies": {
+    "pegjs": "^0.10.0"
   }
 }

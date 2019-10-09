@@ -1,0 +1,107 @@
+{
+  function flatten(input) {
+    return Array.isArray(input) ? input.map(i => flatten(i)).join("") : input;
+  }
+}
+
+All
+  = all: Lines { return flatten(all); }
+
+Lines
+  = Line "\n" Lines
+  / Line
+
+Line
+  = _ "*" _ TypeExpecting _ ComplexType ("#" [^\n\r]*)?
+  / _ "*" _ CurlyTypeExpecting _ CurlyType [^\n\r]*
+  / _ "*" _ !TypeExpecting !CurlyTypeExpecting [^\n\r]*
+  / _ [^\n\r*] [^\n\r]*
+  / _
+
+CurlyTypeExpecting
+  = "@param"
+  / "@property"
+  / "@return" "s"?
+  / "@typedef"
+  / "@type"
+  / "@this"
+  / "@enum"
+
+TypeExpecting
+  = "@fires"
+  / "@event"
+
+CurlyType
+  = "{" _ TypeList _ "}"
+
+TypeList
+  = ComplexType _b "|" _b TypeList
+  / ComplexType
+
+ComplexType
+  = [?!]? ("...")? ComplexTypeUnmodified "="?
+  / "?" 								// short curcuit for the builtin type "?"
+
+ComplexTypeUnmodified
+  = "(" _ TypeList _ ")"
+  / FunctionType
+  / SimpleType ("."? "<" ParameterList ">")?
+  / InlineObjectType
+
+InlineObjectType
+  = "{" _b InlineObjectPropertyList _b "}"
+
+InlineObjectPropertyList
+  = InlineObjectProperty _ "," _b InlineObjectPropertyList
+  / InlineObjectProperty
+
+InlineObjectProperty
+  = Word _ ":" _b ComplexTypeUnmodified
+
+FunctionType
+  = "function" _ "(" _ (("this:" / "new:")? _b ParameterList)? ")" (_ ":" _b ComplexType)?
+
+ParameterList
+  = TypeList "," _b ParameterList
+  / TypeList
+
+SimpleType
+  = RewriteType
+  / PrimitiveType
+  / SpecialType
+  / ConvertedType
+  / TemplateParameter
+  / BuiltinType
+
+ConvertedType
+  = "module:" [a-zA-Z/-]+ (("~" / ".") [a-zA-Z]+)? & NoChar
+
+PrimitiveType
+  = "number" & NoChar
+  / "boolean" & NoChar
+  / "string" & NoChar
+  / "Array" & NoChar
+  / "Object" & NoChar
+  / "undefined" & NoChar
+  / "null" & NoChar
+
+SpecialType
+  = "*" & NoChar
+  / "any" & NoChar
+  / "void" & NoChar
+  / "Partial" & NoChar
+  / "Class" & NoChar
+  // "?" will be captured by a special rule above
+
+_b "break or whitespace"
+  = _ "\n" _ "*" _
+  / _
+
+_ "whitespace"
+  = [ \t]*
+
+NoChar
+  = [^A-Za-z0-9_]
+
+Word
+  = [A-Za-z_][A-Za-z0-9_]* & NoChar

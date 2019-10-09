@@ -1,0 +1,124 @@
+BuiltinType
+  // primitives
+  = "number" &NoChar
+  / "string" &NoChar
+  / "boolean" &NoChar
+  / "undefined" &NoChar
+  / "null" &NoChar
+
+  // standard types
+  / "Object" &NoChar
+  / "Function" &NoChar
+  / "Symbol" &NoChar
+  / "Error" &NoChar
+  / "EvalError" &NoChar
+  / "InternalError" &NoChar
+  / "RangeError" &NoChar
+  / "ReferenceError" &NoChar
+  / "SyntaxError" &NoChar
+  / "TypeError" &NoChar
+  / "URIError" &NoChar
+  / "Date" &NoChar
+  / "RegExp" &NoChar
+  / "Array" &NoChar
+  / "Int8Array" &NoChar
+  / "Uint8Array" &NoChar
+  / "Uint8ClampedArray" &NoChar
+  / "Int16Array" &NoChar
+  / "Uint16Array" &NoChar
+  / "Int32Array" &NoChar
+  / "Uint32Array" &NoChar
+  / "Float32Array" &NoChar
+  / "Float64Array" &NoChar
+  / "BigInt64Array" &NoChar
+  / "BigUint64Array" &NoChar
+  / "Promise" &NoChar
+  / "Generator" &NoChar
+  / "GeneratorFunction" &NoChar
+  / "AsyncFunction" &NoChar
+  / "XMLHttpRequest" &NoChar
+  / "ArrayBuffer" &NoChar
+  / "SharedArrayBuffer" &NoChar
+  / "Atomics" &NoChar
+  / "DataView" &NoChar
+  / "JSON" &NoChar
+  / "Map" &NoChar
+  / "Set" &NoChar
+  / "WeakMap" &NoChar
+  / "WeakSet" &NoChar
+  / "Reflect" &NoChar
+  / "Proxy" &NoChar
+
+  // Geolocation
+  / "PositionError" &NoChar
+  / "PositionOptions" &NoChar
+  / "Position" &NoChar
+  / "Geolocation" &NoChar
+
+  // DOM
+  / "Attr" &NoChar
+  / "CDATASection" &NoChar
+  / "CharacterData" &NoChar
+  / "ChildNode" &NoChar
+  / "Comment" &NoChar
+  / "CustomEvent" &NoChar
+  / "Document" &NoChar
+  / "DocumentFragment" &NoChar
+  / "DocumentType" &NoChar
+  / "DOMError" &NoChar
+  / "DOMException" &NoChar
+  / "DOMImplementation" &NoChar
+  / "DOMString" &NoChar
+  / "DOMTimeStamp" &NoChar
+  / "DOMStringList" &NoChar
+  / "DOMTokenList" &NoChar
+  / "Element" &NoChar
+  / "Event" &NoChar
+  / "EventTarget" &NoChar
+  / "HTMLCollection" &NoChar
+  / "MutationObserver" &NoChar
+  / "MutationRecord" &NoChar
+  / "NamedNodeMap" &NoChar
+  / "Node" &NoChar
+  / "NodeFilter" &NoChar
+  / "NodeIterator" &NoChar
+  / "NodeList" &NoChar
+  / "NonDocumentTypeChildNode" &NoChar
+  / "ParentNode" &NoChar
+  / "ProcessingInstruction" &NoChar
+  / "Selection" &NoChar
+  / "Range" &NoChar
+  / "Text" &NoChar
+  / "TextDecoder" &NoChar
+  / "TextEncoder" &NoChar
+  / "TimeRanges" &NoChar
+  / "TreeWalker" &NoChar
+  / "URL" &NoChar
+  / "Window" &NoChar
+  / "Worker" &NoChar
+  / "XMLDocument" &NoChar
+
+  // HTML Types
+  / "HTMLElement" &NoChar
+  / "HTMLCanvasElement" &NoChar
+  / "HTMLImageElement" &NoChar
+  / "HTMLVideoElement" &NoChar
+
+  // PointerEvent
+  / "PointerEvent" &NoChar
+
+  // TouchEvent
+  / "TouchEvent" &NoChar
+
+  // MouseEvent
+  / "MouseEvent" &NoChar
+
+  // TypeScript types
+  / "*" &NoChar
+  // "?" will be catched by a special rule in type_rewrite_peg_rules
+  / "any" &NoChar
+  / "void" &NoChar
+  / "Partial" &NoChar
+
+  // Other special types
+  / "Class" &NoChar
