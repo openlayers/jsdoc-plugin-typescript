@@ -1,3 +1,4 @@
+require('string.prototype.matchall').shim();
 const path = require('path');
 const fs = require('fs');
 const env = require('jsdoc/env');
