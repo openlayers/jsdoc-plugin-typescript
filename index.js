@@ -70,7 +70,7 @@ function getDelimiter(moduleId, symbol, parser) {
 
 exports.astNodeVisitor = {
 
-  visitNode: function(node, e, parser, currentSourceName) {
+  visitNode: function (node, e, parser, currentSourceName) {
     if (node.type === 'File') {
       const relPath = path.relative(process.cwd(), currentSourceName);
       const modulePath = path.relative(path.join(process.cwd(), moduleRoot), currentSourceName).replace(/\.js$/, '');
@@ -93,7 +93,7 @@ exports.astNodeVisitor = {
               switch (specifier.type) {
                 case 'ImportDefaultSpecifier':
                   defaultImport = true;
-                  // fallthrough
+                // fallthrough
                 case 'ImportSpecifier':
                   identifiers[specifier.local.name] = {
                     defaultImport,
@@ -143,7 +143,7 @@ exports.astNodeVisitor = {
             }
             const leadingComments = node.leadingComments;
             if (leadingComments.length === 0 || leadingComments[leadingComments.length - 1].value.indexOf('@classdesc') === -1 &&
-                noClassdescRegEx.test(leadingComments[leadingComments.length - 1].value)) {
+              noClassdescRegEx.test(leadingComments[leadingComments.length - 1].value)) {
               // Create a suitable comment node if we don't have one on the class yet
               const comment = parser.astBuilder.build('/**\n */', 'helper').comments[0];
               node.leadingComments.push(comment);
@@ -188,7 +188,7 @@ exports.astNodeVisitor = {
 
           // Convert `import("path/to/module").export` to
           // `module:path/to/module~Name`
-          let importMatch;
+          let importMatch, lastImportPath, replaceAttempt;
           while ((importMatch = importRegEx.exec(comment.value))) {
             importRegEx.lastIndex = 0;
             let replacement;
@@ -196,6 +196,16 @@ exports.astNodeVisitor = {
               // simplified replacement for external packages
               replacement = `module:${importMatch[1]}${importMatch[2] === 'default' ? '' : '~' + importMatch[2]}`;
             } else {
+              if (importMatch[0] === lastImportPath) {
+                ++replaceAttempt;
+                if (replaceAttempt > 100) {
+                  // infinite loop protection
+                  throw new Error(`Invalid docstring ${comment.value} in ${currentSourceName}.`)
+                }
+              } else {
+                replaceAttempt = 0;
+              }
+              lastImportPath = importMatch[0];
               const rel = path.resolve(path.dirname(currentSourceName), importMatch[1]);
               const moduleId = path.relative(path.join(process.cwd(), moduleRoot), rel).replace(/\.js$/, '');
               if (getModuleInfo(moduleId, parser)) {
@@ -249,7 +259,7 @@ exports.astNodeVisitor = {
 };
 
 exports.handlers = {
-  parseComplete: function(e) {
+  parseComplete: function (e) {
     // Build inheritance chain after adding @extends annotations
     addInherited(e.doclets, e.doclets.index);
   }
