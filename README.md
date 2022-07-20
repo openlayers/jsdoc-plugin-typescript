@@ -35,7 +35,7 @@ Types defined in a project are converted to JSDoc module paths, so they can be d
 
 In addition to types that are used in the same file that they are defined in, imported types are also supported.
 
-TypeScript and JSDoc use a different syntax for imported types:
+TypeScript and JSDoc use a different syntax for imported types. This plugin converts the TypeScript types so JSDoc can handle them:
 
 ### TypeScript
 
@@ -59,6 +59,12 @@ TypeScript and JSDoc use a different syntax for imported types:
  * @type {typeof import("./path/to/module").exportName}
  */
 ```
+
+**Template literal type**
+```js
+/**
+ * @type {`static:${dynamic}`}
+ */
 
 ### JSDoc
 
@@ -91,3 +97,9 @@ This syntax is also used when referring to types of `@typedef`s and `@enum`s.
  * @type {Class<module:path/to/module.exportName>}
  */
 ```
+
+**Template literal type**
+```js
+/**
+ * @type {'static:${dynamic}'}
+ */
