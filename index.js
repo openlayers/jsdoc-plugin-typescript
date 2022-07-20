@@ -190,6 +190,8 @@ exports.astNodeVisitor = {
         node.comments.forEach(comment => {
           // Replace typeof Foo with Class<Foo>
           comment.value = comment.value.replace(/typeof ([^,\|\}\>]*)([,\|\}\>])/g, 'Class<$1>$2');
+          // Replace `templateliteral` with 'templateliteral'
+          comment.value = comment.value.replace(/`([^`]*)`/g, '\'$1\'');
 
           // Convert `import("path/to/module").export` to
           // `module:path/to/module~Name`
