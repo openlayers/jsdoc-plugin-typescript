@@ -71,6 +71,50 @@ function getDelimiter(moduleId, symbol, parser) {
   return getModuleInfo(moduleId, parser).namedExports[symbol] ? '.' : '~'
 }
 
+exports.defineTags = function (dictionary) {
+  ['type', 'typedef', 'property', 'return', 'param', 'template'].forEach(function (tagName) {
+    const tag = dictionary.lookUp(tagName);
+    const oldOnTagText = tag.onTagText;
+    tag.onTagText = function (tagText) {
+      if (oldOnTagText) {
+        tagText = oldOnTagText.apply(this, arguments);
+      }
+      // Replace `templateliteral` with 'templateliteral'
+      let startIndex = tagText.search('{');
+      if (startIndex === -1) {
+        return tagText;
+      }
+      const len = tagText.length;
+      let open = 0;
+      let i = startIndex;
+      while (i < len) {
+        switch (tagText[i]) {
+          case '\\':
+            // Skip escaped character
+            ++i;
+            break;
+          case '{':
+            ++open;
+            break;
+          case '}':
+            if (!--open) {
+              return (
+                tagText.slice(0, startIndex) +
+                tagText.slice(startIndex, i + 1).replace(/`([^`]*)`/g, '\'$1\'') +
+                tagText.slice(i + 1)
+              );
+            }
+            break;
+          default:
+            break;
+        }
+        ++i;
+      }
+      throw new Error('Missing closing \'}\'');
+    };
+  });
+};
+
 exports.astNodeVisitor = {
 
   visitNode: function (node, e, parser, currentSourceName) {
@@ -190,8 +234,6 @@ exports.astNodeVisitor = {
         node.comments.forEach(comment => {
           // Replace typeof Foo with Class<Foo>
           comment.value = comment.value.replace(/typeof ([^,\|\}\>]*)([,\|\}\>])/g, 'Class<$1>$2');
-          // Replace `templateliteral` with 'templateliteral'
-          comment.value = comment.value.replace(/`([^`]*)`/g, '\'$1\'');
 
           // Convert `import("path/to/module").export` to
           // `module:path/to/module~Name`
