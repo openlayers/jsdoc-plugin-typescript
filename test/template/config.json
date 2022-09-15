@@ -1,0 +1,21 @@
+{
+  "opts": {
+    "recurse": true,
+    "template": "test/template",
+    "destination": "test/dest/actual.json"
+  },
+  "source": {
+    "include": [
+      "test/src"
+    ]
+  },
+  "tags": {
+    "allowUnknownTags": true
+  },
+  "plugins": [
+    "index.js"
+  ],
+  "typescript": {
+    "moduleRoot": "test/src"
+  }
+}
