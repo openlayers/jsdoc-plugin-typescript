@@ -4,21 +4,35 @@
   "description": "Plugin to make TypeScript's JSDoc type annotations work with JSDoc",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint index.js",
+    "pretest": "npm run lint",
+    "test": "node test/test.js"
   },
   "keywords": [
     "jsdoc",
     "typescript"
   ],
+  "files": [
+    "index.js"
+  ],
   "license": "BSD-2-Clause",
-  "peerDependencies": {
-    "jsdoc": ">=3.6.0"
-  },
   "repository": {
     "type": "git",
     "url": "git://github.com/openlayers/jsdoc-plugin-typescript.git"
   },
   "dependencies": {
     "string.prototype.matchall": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/geojson": "^7946.0.10",
+    "@types/proj4": "^2.5.2",
+    "deep-diff-pizza": "^1.0.2",
+    "eslint": "^8.23.1",
+    "eslint-config-openlayers": "^17.0.0",
+    "fs-extra": "^10.1.0",
+    "jsdoc": "^3.6.11"
+  },
+  "eslintConfig": {
+    "extends": "openlayers"
   }
 }

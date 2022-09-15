@@ -1,0 +1,468 @@
+[
+  {
+    "comment": "/**\n * @module test\n */",
+    "meta": {
+      "filename": "index.js",
+      "lineno": 1,
+      "columnno": 0,
+      "code": {}
+    },
+    "kind": "module",
+    "name": "test",
+    "longname": "module:test"
+  },
+  {
+    "comment": "/**\n * @param {module:proj4} proj4 Proj4\n */",
+    "meta": {
+      "range": [
+        122,
+        172
+      ],
+      "filename": "index.js",
+      "lineno": 10,
+      "columnno": 0,
+      "code": {
+        "name": "exports.register",
+        "type": "FunctionDeclaration",
+        "paramnames": [
+          "proj4"
+        ]
+      }
+    },
+    "params": [
+      {
+        "type": {
+          "names": [
+            "module:proj4"
+          ]
+        },
+        "description": "Proj4",
+        "name": "proj4"
+      }
+    ],
+    "name": "register",
+    "longname": "module:test.register",
+    "kind": "function",
+    "memberof": "module:test",
+    "scope": "static"
+  },
+  {
+    "comment": "",
+    "meta": {
+      "range": [
+        129,
+        172
+      ],
+      "filename": "index.js",
+      "lineno": 10,
+      "columnno": 7,
+      "code": {
+        "name": "register",
+        "type": "FunctionDeclaration",
+        "paramnames": [
+          "proj4"
+        ]
+      }
+    },
+    "undocumented": true,
+    "name": "register",
+    "longname": "module:test.register",
+    "kind": "function",
+    "scope": "static",
+    "memberof": "module:test",
+    "params": []
+  },
+  {
+    "comment": "/**\n * @param {module:geojson~Geometry} geometry The geometry.\n * @return {Array<number>} The bounding box.\n */",
+    "meta": {
+      "range": [
+        289,
+        381
+      ],
+      "filename": "index.js",
+      "lineno": 18,
+      "columnno": 0,
+      "code": {
+        "name": "exports.getBounds",
+        "type": "FunctionDeclaration",
+        "paramnames": [
+          "geometry"
+        ]
+      }
+    },
+    "params": [
+      {
+        "type": {
+          "names": [
+            "module:geojson~Geometry"
+          ]
+        },
+        "description": "The geometry.",
+        "name": "geometry"
+      }
+    ],
+    "returns": [
+      {
+        "type": {
+          "names": [
+            "Array.<number>"
+          ]
+        },
+        "description": "The bounding box."
+      }
+    ],
+    "name": "getBounds",
+    "longname": "module:test.getBounds",
+    "kind": "function",
+    "memberof": "module:test",
+    "scope": "static"
+  },
+  {
+    "comment": "",
+    "meta": {
+      "range": [
+        296,
+        381
+      ],
+      "filename": "index.js",
+      "lineno": 18,
+      "columnno": 7,
+      "code": {
+        "name": "getBounds",
+        "type": "FunctionDeclaration",
+        "paramnames": [
+          "geometry"
+        ]
+      }
+    },
+    "undocumented": true,
+    "name": "getBounds",
+    "longname": "module:test.getBounds",
+    "kind": "function",
+    "scope": "static",
+    "memberof": "module:test",
+    "params": []
+  },
+  {
+    "comment": "/**\n * @param {number} number A number.\n * @return {module:sub/NumberStore~NumberStore} A number store.\n */",
+    "meta": {
+      "range": [
+        495,
+        573
+      ],
+      "filename": "index.js",
+      "lineno": 26,
+      "columnno": 0,
+      "code": {
+        "name": "exports.getNumberStore",
+        "type": "FunctionDeclaration",
+        "paramnames": [
+          "number"
+        ]
+      }
+    },
+    "params": [
+      {
+        "type": {
+          "names": [
+            "number"
+          ]
+        },
+        "description": "A number.",
+        "name": "number"
+      }
+    ],
+    "returns": [
+      {
+        "type": {
+          "names": [
+            "module:sub/NumberStore~NumberStore"
+          ]
+        },
+        "description": "A number store."
+      }
+    ],
+    "name": "getNumberStore",
+    "longname": "module:test.getNumberStore",
+    "kind": "function",
+    "memberof": "module:test",
+    "scope": "static"
+  },
+  {
+    "comment": "",
+    "meta": {
+      "range": [
+        502,
+        573
+      ],
+      "filename": "index.js",
+      "lineno": 26,
+      "columnno": 7,
+      "code": {
+        "name": "getNumberStore",
+        "type": "FunctionDeclaration",
+        "paramnames": [
+          "number"
+        ]
+      }
+    },
+    "undocumented": true,
+    "name": "getNumberStore",
+    "longname": "module:test.getNumberStore",
+    "kind": "function",
+    "scope": "static",
+    "memberof": "module:test",
+    "params": []
+  },
+  {
+    "comment": "",
+    "meta": {
+      "range": [
+        562,
+        568
+      ],
+      "filename": "index.js",
+      "lineno": 27,
+      "columnno": 26,
+      "code": {
+        "name": "number",
+        "type": "Identifier",
+        "value": "number"
+      }
+    },
+    "undocumented": true,
+    "name": "number",
+    "longname": "module:test~number",
+    "kind": "member",
+    "scope": "inner",
+    "memberof": "module:test"
+  },
+  {
+    "comment": "/**\n * @module test/sub/NumberStore\n */",
+    "meta": {
+      "filename": "NumberStore.js",
+      "lineno": 1,
+      "columnno": 0,
+      "code": {}
+    },
+    "kind": "module",
+    "name": "test/sub/NumberStore",
+    "longname": "module:test/sub/NumberStore"
+  },
+  {
+    "comment": "/**\n * @typedef {Object} Options\n * @property {number} num A number.\n */",
+    "meta": {
+      "filename": "NumberStore.js",
+      "lineno": 5,
+      "columnno": 0,
+      "code": {}
+    },
+    "kind": "typedef",
+    "name": "Options",
+    "type": {
+      "names": [
+        "Object"
+      ]
+    },
+    "properties": [
+      {
+        "type": {
+          "names": [
+            "number"
+          ]
+        },
+        "description": "A number.",
+        "name": "num"
+      }
+    ],
+    "longname": "module:test/sub/NumberStore~Options",
+    "scope": "inner",
+    "memberof": "module:test/sub/NumberStore"
+  },
+  {
+    "comment": "/**\n * @classdesc\n * A test class.\n */",
+    "meta": {
+      "range": [
+        154,
+        432
+      ],
+      "filename": "NumberStore.js",
+      "lineno": 14,
+      "columnno": 0,
+      "code": {
+        "name": "NumberStore",
+        "type": "ClassDeclaration",
+        "paramnames": [
+          "options"
+        ]
+      }
+    },
+    "classdesc": "A test class.",
+    "name": "NumberStore",
+    "longname": "module:test/sub/NumberStore~NumberStore",
+    "kind": "class",
+    "scope": "inner",
+    "memberof": "module:test/sub/NumberStore",
+    "undocumented": true
+  },
+  {
+    "comment": "/**\n   * @param {module:sub/NumberStore~Options} options The options.\n   */",
+    "meta": {
+      "range": [
+        231,
+        343
+      ],
+      "filename": "NumberStore.js",
+      "lineno": 18,
+      "columnno": 2,
+      "code": {
+        "name": "NumberStore",
+        "type": "MethodDefinition",
+        "paramnames": [
+          "options"
+        ]
+      },
+      "vars": {
+        "": null
+      }
+    },
+    "params": [
+      {
+        "type": {
+          "names": [
+            "module:sub/NumberStore~Options"
+          ]
+        },
+        "description": "The options.",
+        "name": "options"
+      }
+    ],
+    "name": "NumberStore",
+    "longname": "module:test/sub/NumberStore~NumberStore",
+    "kind": "class",
+    "memberof": "module:test/sub/NumberStore",
+    "scope": "inner",
+    "undocumented": true
+  },
+  {
+    "comment": "/**\n * @classdesc\n * A test class.\n */",
+    "meta": {
+      "range": [
+        154,
+        432
+      ],
+      "filename": "NumberStore.js",
+      "lineno": 14,
+      "columnno": 0,
+      "code": {
+        "name": "NumberStore",
+        "type": "ClassDeclaration",
+        "paramnames": [
+          "options"
+        ]
+      }
+    },
+    "name": "NumberStore",
+    "longname": "module:test/sub/NumberStore~NumberStore",
+    "kind": "class",
+    "classdesc": "A test class.",
+    "scope": "inner",
+    "memberof": "module:test/sub/NumberStore",
+    "params": [
+      {
+        "type": {
+          "names": [
+            "module:sub/NumberStore~Options"
+          ]
+        },
+        "description": "The options.",
+        "name": "options"
+      }
+    ]
+  },
+  {
+    "comment": "/**\n     * @type {number}\n     * @private\n     */",
+    "meta": {
+      "range": [
+        312,
+        338
+      ],
+      "filename": "NumberStore.js",
+      "lineno": 23,
+      "columnno": 4,
+      "code": {
+        "name": "this.num_",
+        "type": "MemberExpression",
+        "value": "options.number",
+        "paramnames": []
+      }
+    },
+    "type": {
+      "names": [
+        "number"
+      ]
+    },
+    "access": "private",
+    "name": "num_",
+    "longname": "module:test/sub/NumberStore~NumberStore#num_",
+    "kind": "member",
+    "memberof": "module:test/sub/NumberStore~NumberStore",
+    "scope": "instance"
+  },
+  {
+    "comment": "/**\n   * @return {number} A number.\n   */",
+    "meta": {
+      "range": [
+        391,
+        430
+      ],
+      "filename": "NumberStore.js",
+      "lineno": 29,
+      "columnno": 2,
+      "code": {
+        "name": "NumberStore#getNumber",
+        "type": "MethodDefinition",
+        "paramnames": []
+      },
+      "vars": {
+        "": null
+      }
+    },
+    "returns": [
+      {
+        "type": {
+          "names": [
+            "number"
+          ]
+        },
+        "description": "A number."
+      }
+    ],
+    "name": "getNumber",
+    "longname": "module:test/sub/NumberStore~NumberStore#getNumber",
+    "kind": "function",
+    "memberof": "module:test/sub/NumberStore~NumberStore",
+    "scope": "instance",
+    "params": []
+  },
+  {
+    "comment": "",
+    "meta": {
+      "range": [
+        434,
+        461
+      ],
+      "filename": "NumberStore.js",
+      "lineno": 34,
+      "columnno": 0,
+      "code": {
+        "name": "module.exports",
+        "type": "Identifier"
+      }
+    },
+    "undocumented": true,
+    "name": "module:test/sub/NumberStore",
+    "longname": "module:test/sub/NumberStore",
+    "kind": "member"
+  }
+]
