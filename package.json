@@ -30,7 +30,7 @@
     "eslint": "^8.23.1",
     "eslint-config-openlayers": "^17.0.0",
     "fs-extra": "^10.1.0",
-    "jsdoc": "^3.6.11"
+    "jsdoc": "^4.0.0"
   },
   "eslintConfig": {
     "extends": "openlayers"
