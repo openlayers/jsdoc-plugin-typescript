@@ -22,12 +22,14 @@ function sanitizeObject(obj) {
 
 /**
  * Publish hook for the JSDoc template.  Writes to JSON stdout.
- * @param {Function} data The root of the Taffy DB containing doclet records.
+ * @param {Function} data The root of the Salty DB containing doclet records.
  * @param {Object} opts Options.
  * @return {Promise} A promise that resolves when writing is complete.
  */
 exports.publish = function (data, opts) {
-  const docs = data({kind: {'!is': 'package'}}).get();
+  const docs = data(function () {
+    return this.kind !== 'package';
+  }).get();
 
   const sanitized = docs.map((doclet) => {
     const obj = JSON.parse(JSON.stringify(doclet));
