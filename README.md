@@ -66,6 +66,10 @@ TypeScript and JSDoc use a different syntax for imported types. This plugin conv
  * @type {`static:${dynamic}`}
  */
 
+**@override annotations**
+
+are removed because they make JSDoc stop inheritance
+
 ### JSDoc
 
 **Named export:**
