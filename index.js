@@ -298,6 +298,9 @@ exports.astNodeVisitor = {
             'Class<$1>$2'
           );
 
+          // Remove `@override` annotations to avoid JSDoc breaking the inheritance chain
+          comment.value = comment.value.replace(' @override', ' ');
+
           // Convert `import("path/to/module").export` to
           // `module:path/to/module~Name`
           let importMatch, lastImportPath, replaceAttempt;
