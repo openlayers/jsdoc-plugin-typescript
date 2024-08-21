@@ -40,6 +40,7 @@ TypeScript and JSDoc use a different syntax for imported types. This plugin conv
 ### TypeScript
 
 **Named export:**
+
 ```js
 /**
  * @type {import("./path/to/module").exportName}
@@ -47,6 +48,7 @@ TypeScript and JSDoc use a different syntax for imported types. This plugin conv
 ```
 
 **Default export:**
+
 ```js
 /**
  * @type {import("./path/to/module").default}
@@ -54,6 +56,7 @@ TypeScript and JSDoc use a different syntax for imported types. This plugin conv
 ```
 
 **typeof type:**
+
 ```js
 /**
  * @type {typeof import("./path/to/module").exportName}
@@ -61,10 +64,12 @@ TypeScript and JSDoc use a different syntax for imported types. This plugin conv
 ```
 
 **Template literal type**
+
 ```js
 /**
  * @type {`static:${dynamic}`}
  */
+```
 
 **@override annotations**
 
@@ -73,6 +78,7 @@ are removed because they make JSDoc stop inheritance
 ### JSDoc
 
 **Named export:**
+
 ```js
 /**
  * @type {module:path/to/module.exportName}
@@ -80,6 +86,7 @@ are removed because they make JSDoc stop inheritance
 ```
 
 **Default export assigned to a variable in the exporting module:**
+
 ```js
 /**
  * @type {module:path/to/module~variableOfDefaultExport}
@@ -89,6 +96,7 @@ are removed because they make JSDoc stop inheritance
 This syntax is also used when referring to types of `@typedef`s and `@enum`s.
 
 **Anonymous default export:**
+
 ```js
 /**
  * @type {module:path/to/module}
@@ -96,6 +104,7 @@ This syntax is also used when referring to types of `@typedef`s and `@enum`s.
 ```
 
 **typeof type:**
+
 ```js
 /**
  * @type {Class<module:path/to/module.exportName>}
@@ -103,6 +112,7 @@ This syntax is also used when referring to types of `@typedef`s and `@enum`s.
 ```
 
 **Template literal type**
+
 ```js
 /**
  * @type {'static:${dynamic}'}
