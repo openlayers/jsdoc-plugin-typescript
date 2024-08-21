@@ -28,9 +28,7 @@ In addition to types that are used in the same file that they are defined in, im
 
 TypeScript and JSDoc use a different syntax for imported types. This plugin converts the TypeScript types so JSDoc can handle them:
 
-### TypeScript
-
-**Named export:**
+### Named export
 
 ```js
 /**
@@ -38,37 +36,7 @@ TypeScript and JSDoc use a different syntax for imported types. This plugin conv
  */
 ```
 
-**Default export:**
-
-```js
-/**
- * @type {import("./path/to/module").default}
- */
-```
-
-**typeof type:**
-
-```js
-/**
- * @type {typeof import("./path/to/module").exportName}
- */
-```
-
-**Template literal type**
-
-```js
-/**
- * @type {`static:${dynamic}`}
- */
-```
-
-**@override annotations**
-
-are removed because they make JSDoc stop inheritance
-
-### JSDoc
-
-**Named export:**
+To:
 
 ```js
 /**
@@ -76,7 +44,23 @@ are removed because they make JSDoc stop inheritance
  */
 ```
 
-**Default export assigned to a variable in the exporting module:**
+### Default export
+
+```js
+/**
+ * @type {import("./path/to/module").default}
+ */
+```
+
+To:
+
+```js
+/**
+ * @type {module:path/to/module}
+ */
+```
+
+When assigned to a variable in the exporting module:
 
 ```js
 /**
@@ -86,15 +70,15 @@ are removed because they make JSDoc stop inheritance
 
 This syntax is also used when referring to types of `@typedef`s and `@enum`s.
 
-**Anonymous default export:**
+### `typeof type`
 
 ```js
 /**
- * @type {module:path/to/module}
+ * @type {typeof import("./path/to/module").exportName}
  */
 ```
 
-**typeof type:**
+To:
 
 ```js
 /**
@@ -102,11 +86,73 @@ This syntax is also used when referring to types of `@typedef`s and `@enum`s.
  */
 ```
 
-**Template literal type**
+### Template literal type
+
+```js
+/**
+ * @type {`static:${dynamic}`}
+ */
+```
+
+To:
 
 ```js
 /**
  * @type {'static:${dynamic}'}
+ */
+```
+
+### @override annotations
+
+are removed because they make JSDoc stop inheritance
+
+### Interface style semi-colon separators
+
+```js
+/**
+ * @type {{a: number; b: string;}}
+ */
+```
+
+To:
+
+```js
+/**
+ * @type {{a: number, b: string}}
+ */
+```
+
+Also removes trailing commas from object types.
+
+### TS inline function syntax
+
+```js
+/**
+ * @type {(a: number, b: string) => void}
+ */
+```
+
+To:
+
+```js
+/**
+ * @type {function(): void}
+ */
+```
+
+### Bracket notation
+
+```js
+/**
+ * @type {obj['key']}
+ */
+```
+
+To:
+
+```js
+/**
+ * @type {obj.key}
  */
 ```
 
