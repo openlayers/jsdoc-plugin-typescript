@@ -26,3 +26,31 @@ export function getBounds(geometry) {
 export function getNumberStore(number) {
   return new NumberStore({number});
 }
+
+/**
+ * @type {{a: number; b: string;}}
+ */
+export const interfaceSeparators = {
+  a: 1,
+  b: '2',
+};
+
+/**
+ * @type {(...args: Parameters<typeof getNumberStore>) => void}
+ */
+export const tsFunctionSyntax = (...args) => {};
+
+/**
+ * @type {(a: () => void | () => void) => void}
+ */
+export const tsFunctionSyntaxNested = (...args) => {};
+
+/**
+ * @type {function(number): void}
+ */
+export const jsdocFunctionSyntax = (...args) => {};
+
+/**
+ * @type {interfaceSeparators['a']}
+ */
+export const bracketNotation = 1;
