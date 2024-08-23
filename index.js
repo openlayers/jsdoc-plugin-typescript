@@ -106,6 +106,7 @@ exports.defineTags = function (dictionary) {
   tags.forEach(function (tagName) {
     const tag = dictionary.lookUp(tagName);
     const oldOnTagText = tag.onTagText;
+
     tag.onTagText = function (tagText) {
       if (oldOnTagText) {
         tagText = oldOnTagText.apply(this, arguments);
@@ -115,40 +116,82 @@ exports.defineTags = function (dictionary) {
       if (startIndex === -1) {
         return tagText;
       }
+
       const len = tagText.length;
-      let open = 0;
+      const functionIndices = [];
+
+      let openCurly = 0;
+      let openRound = 0;
       let i = startIndex;
+      let functionStartEnd = [];
+
       while (i < len) {
         switch (tagText[i]) {
           case '\\':
             // Skip escaped character
             ++i;
             break;
+          case '(':
+            if (openRound === 0) {
+              functionStartEnd.push(i);
+            }
+
+            ++openRound;
+
+            break;
+          case ')':
+            if (!--openRound) {
+              // If round brackets form a function
+              const returnMatch = tagText.slice(i + 1).match(/^\s*(:|=>)/);
+
+              if (returnMatch) {
+                functionStartEnd.push(i + returnMatch[0].length + 1);
+                functionIndices.push(functionStartEnd);
+              }
+
+              functionStartEnd = [];
+            }
+
+            break;
           case '{':
-            ++open;
+            ++openCurly;
             break;
           case '}':
-            if (!--open) {
-              return (
-                tagText.slice(0, startIndex) +
-                tagText
-                  .slice(startIndex, i + 1)
-                  // Replace `templateliteral` with 'templateliteral'
-                  .replace(/`([^`]*)`/g, "'$1'")
-                  // Interface style semi-colon separators to commas
-                  .replace(/;/g, ',')
-                  // Remove trailing commas in object types
-                  .replace(/,(\s*\})/g, '$1')
-                  // TS-style param typing isn't supported, so just strip spaces after all colons
-                  .replace(/:\s*/g, ':')
-                  // Bracket notation to dot notation
-                  .replace(
-                    /(\w+|>|\)|\])\[(?:'([^']+)'|"([^"]+)")\]/g,
-                    '$1.$2$3'
-                  ) +
-                tagText.slice(i + 1)
-              );
+            if (!--openCurly) {
+              const head = tagText.slice(0, startIndex);
+              const tail = tagText.slice(i + 1);
+
+              let replaced = tagText.slice(startIndex, i + 1);
+
+              // Replace TS inline function syntax with JSDoc
+              functionIndices.reverse().forEach(([start, end]) => {
+                if (tagText.slice(0, start).endsWith('function')) {
+                  // Already JSDoc syntax
+                  return;
+                }
+
+                replaced =
+                  replaced.slice(0, start - startIndex) +
+                  'function():' +
+                  replaced.slice(end - startIndex);
+              });
+
+              replaced = replaced
+                // Replace `templateliteral` with 'templateliteral'
+                .replace(/`([^`]*)`/g, "'$1'")
+                // Interface style semi-colon separators to commas
+                .replace(/;/g, ',')
+                // Remove trailing commas in object types
+                .replace(/,(\s*\})/g, '$1')
+                // Bracket notation to dot notation
+                .replace(
+                  /(\w+|>|\)|\])\[(?:'([^']+)'|"([^"]+)")\]/g,
+                  '$1.$2$3'
+                );
+
+              return head + replaced + tail;
             }
+
             break;
           default:
             break;
