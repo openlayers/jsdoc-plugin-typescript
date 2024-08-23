@@ -21,7 +21,7 @@ function jsdoc() {
     const child = spawn(
       'npx',
       ['jsdoc', '--configure', 'test/template/config.json'],
-      {cwd: getPath('..')}
+      {cwd: getPath('..'), stdio: [null, 'inherit', null]}
     );
 
     child.stderr.on('data', (data) => {
