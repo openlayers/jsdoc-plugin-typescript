@@ -165,7 +165,7 @@ exports.defineTags = function (dictionary) {
 
               // Replace TS inline function syntax with JSDoc
               functionIndices.reverse().forEach(([start, end]) => {
-                if (tagText.slice(0, start).endsWith('function')) {
+                if (tagText.slice(0, start).trim().endsWith('function')) {
                   // Already JSDoc syntax
                   return;
                 }
