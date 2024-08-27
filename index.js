@@ -216,7 +216,7 @@ exports.astNodeVisitor = {
                     comment.value.indexOf('@classdesc') !== -1 ||
                     !noClassdescRegEx.test(comment.value)
                   ) {
-                    node.leadingComments.push(comment);
+                    node.leadingComments.unshift(comment);
                     node.parent.leadingComments.splice(i, 1);
                     const ignore =
                       parser.astBuilder.build('/** @ignore */').comments[0];
