@@ -107,3 +107,8 @@ This syntax is also used when referring to types of `@typedef`s and `@enum`s.
 /**
  * @type {'static:${dynamic}'}
  */
+```
+
+## Contributing
+
+If you are interested in making a contribution to the project, please see the [contributing page](./contributing.md) for details on getting your development environment set up.
