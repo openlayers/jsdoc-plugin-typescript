@@ -30,14 +30,15 @@ const leadingPathSegmentRegEx = /^(.?.[/\\])+/;
 const moduleInfos = {};
 const fileNodes = {};
 
-let inferredModuleRoot;
+// Without explicit module ids, JSDoc will use the nearest shared ancestor directory
+let implicitModuleRoot;
 
-function getInferredModuleRoot() {
-  if (inferredModuleRoot) {
-    return inferredModuleRoot;
+function getImplicitModuleRoot() {
+  if (implicitModuleRoot) {
+    return implicitModuleRoot;
   }
 
-  inferredModuleRoot = env.sourceFiles.reduce((nearestAncestor, curr, i) => {
+  implicitModuleRoot = env.sourceFiles.reduce((nearestAncestor, curr, i) => {
     if (curr.startsWith(nearestAncestor) || i === 0) {
       return nearestAncestor;
     }
@@ -52,7 +53,7 @@ function getInferredModuleRoot() {
     }
   }, path.dirname(env.sourceFiles[0]));
 
-  return inferredModuleRoot;
+  return implicitModuleRoot;
 }
 
 function getModuleInfo(modulePath, parser) {
@@ -134,9 +135,9 @@ function getModuleId(modulePath) {
     }
   }
 
-  if (getInferredModuleRoot()) {
+  if (getImplicitModuleRoot()) {
     return path
-      .relative(inferredModuleRoot, modulePath)
+      .relative(implicitModuleRoot, modulePath)
       .replace(extensionReplaceRegEx, '');
   }
 
