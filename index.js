@@ -4,20 +4,13 @@ const fs = require('fs');
 const env = require('jsdoc/env'); // eslint-disable-line import/no-unresolved
 const addInherited = require('jsdoc/augment').addInherited; // eslint-disable-line import/no-unresolved
 
-const config = env.conf.typescript;
-if (!config) {
-  throw new Error(
-    'Configuration "typescript" for jsdoc-plugin-typescript missing.'
-  );
-}
-if (!('moduleRoot' in config)) {
-  throw new Error(
-    'Configuration "typescript.moduleRoot" for jsdoc-plugin-typescript missing.'
-  );
-}
-const moduleRoot = config.moduleRoot;
-const moduleRootAbsolute = path.join(process.cwd(), moduleRoot);
-if (!fs.existsSync(moduleRootAbsolute)) {
+const config = env.conf;
+const moduleRoot = config.typescript ? config.typescript.moduleRoot : undefined;
+const moduleRootAbsolute = moduleRoot
+  ? path.join(process.cwd(), moduleRoot)
+  : undefined;
+
+if (moduleRootAbsolute && !fs.existsSync(moduleRootAbsolute)) {
   throw new Error(
     'Directory "' +
       moduleRootAbsolute +
@@ -30,31 +23,55 @@ const importRegEx =
 const typedefRegEx = /@typedef \{[^\}]*\} (\S+)/g;
 const noClassdescRegEx = /@(typedef|module|type)/;
 const extensionReplaceRegEx = /\.m?js$/;
+const extensionEnsureRegEx = /(\.js)?$/;
 const slashRegEx = /\\/g;
 const leadingPathSegmentRegEx = /^(.?.[/\\])+/;
 
 const moduleInfos = {};
 const fileNodes = {};
 
-function getExtension(absolutePath) {
-  return extensionReplaceRegEx.test(absolutePath)
-    ? extensionReplaceRegEx.exec(absolutePath)[0]
-    : '.js';
+let inferredModuleRoot;
+
+function getInferredModuleRoot() {
+  if (inferredModuleRoot) {
+    return inferredModuleRoot;
+  }
+
+  inferredModuleRoot = env.sourceFiles.reduce((nearestAncestor, curr, i) => {
+    if (curr.startsWith(nearestAncestor) || i === 0) {
+      return nearestAncestor;
+    }
+
+    const currParts = curr.split(path.sep);
+    const nearestParts = nearestAncestor.split(path.sep);
+
+    for (let i = 0; i < currParts.length; ++i) {
+      if (currParts[i] !== nearestParts[i]) {
+        return currParts.slice(0, i).join(path.sep);
+      }
+    }
+  }, path.dirname(env.sourceFiles[0]));
+
+  return inferredModuleRoot;
 }
 
-function getModuleInfo(moduleId, extension, parser) {
-  if (!moduleInfos[moduleId]) {
-    if (!fileNodes[moduleId]) {
-      const absolutePath = path.join(moduleRootAbsolute, moduleId + extension);
-      if (!fs.existsSync(absolutePath)) {
+function getModuleInfo(modulePath, parser) {
+  if (!moduleInfos[modulePath]) {
+    if (!fileNodes[modulePath]) {
+      if (!fs.existsSync(modulePath)) {
         return null;
       }
-      const file = fs.readFileSync(absolutePath, 'UTF-8');
-      fileNodes[moduleId] = parser.astBuilder.build(file, absolutePath);
+
+      const file = fs.readFileSync(modulePath, 'UTF-8');
+
+      fileNodes[modulePath] = parser.astBuilder.build(file, modulePath);
     }
-    moduleInfos[moduleId] = {namedExports: {}};
-    const moduleInfo = moduleInfos[moduleId];
-    const node = fileNodes[moduleId];
+
+    moduleInfos[modulePath] = {namedExports: {}};
+
+    const moduleInfo = moduleInfos[modulePath];
+    const node = fileNodes[modulePath];
+
     if (node.program && node.program.body) {
       const classDeclarations = {};
       const nodes = node.program.body;
@@ -77,22 +94,57 @@ function getModuleInfo(moduleId, extension, parser) {
       }
     }
   }
-  return moduleInfos[moduleId];
+
+  return moduleInfos[modulePath];
 }
 
-function getDefaultExportName(moduleId, parser) {
-  return getModuleInfo(moduleId, parser).defaultExport;
+function getDefaultExportName(modulePath) {
+  return getModuleInfo(modulePath).defaultExport;
 }
 
-function getDelimiter(moduleId, symbol, parser) {
-  return getModuleInfo(moduleId, parser).namedExports[symbol] ? '.' : '~';
+function getDelimiter(modulePath, symbol) {
+  return getModuleInfo(modulePath).namedExports[symbol] ? '.' : '~';
 }
 
 function getModuleId(modulePath) {
-  return path
-    .relative(moduleRootAbsolute, modulePath)
-    .replace(extensionReplaceRegEx, '')
-    .replace(leadingPathSegmentRegEx, '');
+  // Use moduleRoot if set
+  if (moduleRootAbsolute) {
+    return path
+      .relative(moduleRootAbsolute, modulePath)
+      .replace(extensionReplaceRegEx, '')
+      .replace(leadingPathSegmentRegEx, '');
+  }
+
+  // Search for explicit module id
+  if (fileNodes[modulePath]) {
+    for (const comment of fileNodes[modulePath].comments) {
+      if (!/@module(?=\s)/.test(comment.value)) {
+        continue;
+      }
+
+      const explicitModuleId = comment.value
+        .split(/@module(?=\s)/)[1]
+        .split(/\n+\s*\*\s*@\w+/)[0] // Split before the next tag
+        .replace(/\n+\s*\*|\{[^\}]*\}/g, '') // Remove new lines with asterisks, and type annotations
+        .trim();
+
+      if (explicitModuleId) {
+        return explicitModuleId;
+      }
+    }
+  }
+
+  if (getInferredModuleRoot()) {
+    return path
+      .relative(inferredModuleRoot, modulePath)
+      .replace(extensionReplaceRegEx, '');
+  }
+
+  throw new Error(`Unable to resolve module id for file ${modulePath}.`);
+}
+
+function withJsExt(filePath) {
+  return filePath.replace(extensionEnsureRegEx, '.js');
 }
 
 exports.defineTags = function (dictionary) {
@@ -146,7 +198,7 @@ exports.defineTags = function (dictionary) {
 exports.astNodeVisitor = {
   visitNode: function (node, e, parser, currentSourceName) {
     if (node.type === 'File') {
-      fileNodes[getModuleId(currentSourceName)] = node;
+      fileNodes[currentSourceName] = node;
       const identifiers = {};
       if (node.program && node.program.body) {
         const nodes = node.program.body;
@@ -263,19 +315,18 @@ exports.astNodeVisitor = {
               if (identifier) {
                 const absolutePath = path.resolve(
                   path.dirname(currentSourceName),
-                  identifier.value
+                  withJsExt(identifier.value)
                 );
-                // default to js extension since .js extention is assumed implicitly
-                const extension = getExtension(absolutePath);
-                const moduleId = getModuleId(absolutePath);
 
-                if (getModuleInfo(moduleId, extension, parser)) {
+                if (getModuleInfo(absolutePath, parser)) {
+                  const moduleId = getModuleId(absolutePath);
+
                   const exportName = identifier.defaultImport
-                    ? getDefaultExportName(moduleId, parser)
+                    ? getDefaultExportName(absolutePath)
                     : node.superClass.name;
                   const delimiter = identifier.defaultImport
                     ? '~'
-                    : getDelimiter(moduleId, exportName, parser);
+                    : getDelimiter(absolutePath, exportName);
                   lines[lines.length - 2] =
                     ' * @extends ' +
                     `module:${moduleId.replace(slashRegEx, '/')}${
@@ -332,21 +383,18 @@ exports.astNodeVisitor = {
               lastImportPath = importExpression;
               const rel = path.resolve(
                 path.dirname(currentSourceName),
-                importSource
+                withJsExt(importSource)
               );
-              // default to js extension since .js extention is assumed implicitly
-              const extension = getExtension(rel);
-              const moduleId = getModuleId(rel);
 
-              if (getModuleInfo(moduleId, extension, parser)) {
+              if (getModuleInfo(rel, parser)) {
+                const moduleId = getModuleId(rel);
+
                 const name =
                   exportName === 'default'
-                    ? getDefaultExportName(moduleId, parser)
+                    ? getDefaultExportName(rel)
                     : exportName;
                 const delimiter =
-                  exportName === 'default'
-                    ? '~'
-                    : getDelimiter(moduleId, name, parser);
+                  exportName === 'default' ? '~' : getDelimiter(rel, name);
                 replacement = `module:${moduleId.replace(slashRegEx, '/')}${
                   name ? delimiter + name : ''
                 }`;
@@ -391,18 +439,18 @@ exports.astNodeVisitor = {
                 const identifier = identifiers[key];
                 const absolutePath = path.resolve(
                   path.dirname(currentSourceName),
-                  identifier.value
+                  withJsExt(identifier.value)
                 );
-                // default to js extension since .js extention is assumed implicitly
-                const extension = getExtension(absolutePath);
-                const moduleId = getModuleId(absolutePath);
-                if (getModuleInfo(moduleId, extension, parser)) {
+
+                if (getModuleInfo(absolutePath, parser)) {
+                  const moduleId = getModuleId(absolutePath);
+
                   const exportName = identifier.defaultImport
-                    ? getDefaultExportName(moduleId, parser)
+                    ? getDefaultExportName(absolutePath)
                     : key;
                   const delimiter = identifier.defaultImport
                     ? '~'
-                    : getDelimiter(moduleId, exportName, parser);
+                    : getDelimiter(absolutePath, exportName);
                   const replacement = `module:${moduleId.replace(
                     slashRegEx,
                     '/'
