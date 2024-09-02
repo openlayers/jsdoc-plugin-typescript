@@ -31,6 +31,7 @@ const moduleInfos = {};
 const fileNodes = {};
 
 // Without explicit module ids, JSDoc will use the nearest shared ancestor directory
+/** @type {string} */
 let implicitModuleRoot;
 
 function getImplicitModuleRoot() {
@@ -38,20 +39,26 @@ function getImplicitModuleRoot() {
     return implicitModuleRoot;
   }
 
-  implicitModuleRoot = env.sourceFiles.reduce((nearestAncestor, curr, i) => {
-    if (curr.startsWith(nearestAncestor) || i === 0) {
-      return nearestAncestor;
+  if (!env.sourceFiles || env.sourceFiles.length === 0) {
+    return process.cwd();
+  }
+
+  implicitModuleRoot = env.sourceFiles[0];
+
+  env.sourceFiles.slice(1).forEach((filePath) => {
+    if (filePath.startsWith(implicitModuleRoot)) {
+      return implicitModuleRoot;
     }
 
-    const currParts = curr.split(path.sep);
-    const nearestParts = nearestAncestor.split(path.sep);
+    const currParts = filePath.split(path.sep);
+    const nearestParts = implicitModuleRoot.split(path.sep);
 
     for (let i = 0; i < currParts.length; ++i) {
       if (currParts[i] !== nearestParts[i]) {
         return currParts.slice(0, i).join(path.sep);
       }
     }
-  }, path.dirname(env.sourceFiles[0]));
+  });
 
   return implicitModuleRoot;
 }
@@ -135,13 +142,9 @@ function getModuleId(modulePath) {
     }
   }
 
-  if (getImplicitModuleRoot()) {
-    return path
-      .relative(implicitModuleRoot, modulePath)
-      .replace(extensionReplaceRegEx, '');
-  }
-
-  throw new Error(`Unable to resolve module id for file ${modulePath}.`);
+  return path
+    .relative(getImplicitModuleRoot(), modulePath)
+    .replace(extensionReplaceRegEx, '');
 }
 
 function withJsExt(filePath) {
