@@ -76,6 +76,39 @@ function getImplicitModuleRoot() {
   return implicitModuleRoot;
 }
 
+function getModuleId(modulePath) {
+  // Use moduleRoot if set
+  if (moduleRootAbsolute) {
+    return path
+      .relative(moduleRootAbsolute, modulePath)
+      .replace(extensionReplaceRegEx, '')
+      .replace(leadingPathSegmentRegEx, '');
+  }
+
+  // Search for explicit module id
+  if (fileNodes[modulePath]) {
+    for (const comment of fileNodes[modulePath].comments) {
+      if (!/@module(?=\s)/.test(comment.value)) {
+        continue;
+      }
+
+      const explicitModuleId = comment.value
+        .split(/@module(?=\s)/)[1]
+        .split(/\n+\s*\*\s*@\w+/)[0] // Split before the next tag
+        .replace(/\n+\s*\*|\{[^\}]*\}/g, '') // Remove new lines with asterisks, and type annotations
+        .trim();
+
+      if (explicitModuleId) {
+        return explicitModuleId;
+      }
+    }
+  }
+
+  return path
+    .relative(getImplicitModuleRoot(), modulePath)
+    .replace(extensionReplaceRegEx, '');
+}
+
 function getModuleInfo(modulePath, parser) {
   if (!moduleInfos[modulePath]) {
     if (!fileNodes[modulePath]) {
@@ -88,7 +121,10 @@ function getModuleInfo(modulePath, parser) {
       fileNodes[modulePath] = parser.astBuilder.build(file, modulePath);
     }
 
-    moduleInfos[modulePath] = {namedExports: {}};
+    moduleInfos[modulePath] = {
+      id: getModuleId(modulePath),
+      namedExports: {},
+    };
 
     const moduleInfo = moduleInfos[modulePath];
     const node = fileNodes[modulePath];
@@ -125,39 +161,6 @@ function getDefaultExportName(modulePath) {
 
 function getDelimiter(modulePath, symbol) {
   return getModuleInfo(modulePath).namedExports[symbol] ? '.' : '~';
-}
-
-function getModuleId(modulePath) {
-  // Use moduleRoot if set
-  if (moduleRootAbsolute) {
-    return path
-      .relative(moduleRootAbsolute, modulePath)
-      .replace(extensionReplaceRegEx, '')
-      .replace(leadingPathSegmentRegEx, '');
-  }
-
-  // Search for explicit module id
-  if (fileNodes[modulePath]) {
-    for (const comment of fileNodes[modulePath].comments) {
-      if (!/@module(?=\s)/.test(comment.value)) {
-        continue;
-      }
-
-      const explicitModuleId = comment.value
-        .split(/@module(?=\s)/)[1]
-        .split(/\n+\s*\*\s*@\w+/)[0] // Split before the next tag
-        .replace(/\n+\s*\*|\{[^\}]*\}/g, '') // Remove new lines with asterisks, and type annotations
-        .trim();
-
-      if (explicitModuleId) {
-        return explicitModuleId;
-      }
-    }
-  }
-
-  return path
-    .relative(getImplicitModuleRoot(), modulePath)
-    .replace(extensionReplaceRegEx, '');
 }
 
 function withJsExt(filePath) {
@@ -336,7 +339,7 @@ exports.astNodeVisitor = {
                 );
 
                 if (getModuleInfo(absolutePath, parser)) {
-                  const moduleId = getModuleId(absolutePath);
+                  const moduleId = moduleInfos[absolutePath];
 
                   const exportName = identifier.defaultImport
                     ? getDefaultExportName(absolutePath)
@@ -404,7 +407,7 @@ exports.astNodeVisitor = {
               );
 
               if (getModuleInfo(rel, parser)) {
-                const moduleId = getModuleId(rel);
+                const moduleId = moduleInfos[rel];
 
                 const name =
                   exportName === 'default'
@@ -460,7 +463,7 @@ exports.astNodeVisitor = {
                 );
 
                 if (getModuleInfo(absolutePath, parser)) {
-                  const moduleId = getModuleId(absolutePath);
+                  const moduleId = moduleInfos[absolutePath];
 
                   const exportName = identifier.defaultImport
                     ? getDefaultExportName(absolutePath)
