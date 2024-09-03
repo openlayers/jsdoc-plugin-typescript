@@ -339,7 +339,7 @@ exports.astNodeVisitor = {
                 );
 
                 if (getModuleInfo(absolutePath, parser)) {
-                  const moduleId = moduleInfos[absolutePath];
+                  const moduleId = moduleInfos[absolutePath].id;
 
                   const exportName = identifier.defaultImport
                     ? getDefaultExportName(absolutePath)
@@ -407,7 +407,7 @@ exports.astNodeVisitor = {
               );
 
               if (getModuleInfo(rel, parser)) {
-                const moduleId = moduleInfos[rel];
+                const moduleId = moduleInfos[rel].id;
 
                 const name =
                   exportName === 'default'
@@ -463,7 +463,7 @@ exports.astNodeVisitor = {
                 );
 
                 if (getModuleInfo(absolutePath, parser)) {
-                  const moduleId = moduleInfos[absolutePath];
+                  const moduleId = moduleInfos[absolutePath].id;
 
                   const exportName = identifier.defaultImport
                     ? getDefaultExportName(absolutePath)
