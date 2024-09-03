@@ -35,17 +35,25 @@ const fileNodes = {};
 let implicitModuleRoot;
 
 /**
- * @return {string} The nearest shared parent directory of all source files.
+ * Without explicit module ids, JSDoc will use `process.cwd()` if all source files are within cwd.
+ * If any source files are outside cwd, JSDoc will use the nearest shared parent directory.
+ * @return {string} The implicit root path with which to resolve all module ids against.
  */
 function getImplicitModuleRoot() {
   if (implicitModuleRoot) {
     return implicitModuleRoot;
   }
 
-  if (!env.sourceFiles || env.sourceFiles.length === 0) {
+  if (
+    !env.sourceFiles ||
+    env.sourceFiles.length === 0 ||
+    // If all files are in cwd
+    env.sourceFiles.every((f) => f.startsWith(process.cwd()))
+  ) {
     return process.cwd();
   }
 
+  // Find the nearest shared parent directory
   implicitModuleRoot = path.dirname(env.sourceFiles[0]);
 
   env.sourceFiles.slice(1).forEach((filePath) => {

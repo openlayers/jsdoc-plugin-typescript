@@ -27,7 +27,9 @@ In the absence of `typescript.moduleRoot`, the plugin will mirror the method JSD
 
 1. Parse the referenced module for an `@module` tag.
 2. If a tag is found and it has an explicit id, use that.
-3. If a tag is found, but it doesn't have an explicit id, use the file path relative to the **nearest shared parent directory**, and remove the file extension.
+3. If a tag is found, but it doesn't have an explicit id, use the module's file path relative to the root directory, and remove the file extension.
+
+**NOTE:** The root directory will be `process.cwd()` unless any source files are outside it, in which case, the root folder is considered the nearest shared parent directory of all source files.
 
 ## What this plugin does
 
