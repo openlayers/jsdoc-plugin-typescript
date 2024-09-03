@@ -30,10 +30,13 @@ const leadingPathSegmentRegEx = /^(.?.[/\\])+/;
 const moduleInfos = {};
 const fileNodes = {};
 
-// Without explicit module ids, JSDoc will use the nearest shared ancestor directory
+// Without explicit module ids, JSDoc will use the nearest shared parent directory
 /** @type {string} */
 let implicitModuleRoot;
 
+/**
+ * @return {string} The nearest shared parent directory of all source files.
+ */
 function getImplicitModuleRoot() {
   if (implicitModuleRoot) {
     return implicitModuleRoot;
@@ -43,11 +46,11 @@ function getImplicitModuleRoot() {
     return process.cwd();
   }
 
-  implicitModuleRoot = env.sourceFiles[0];
+  implicitModuleRoot = path.dirname(env.sourceFiles[0]);
 
   env.sourceFiles.slice(1).forEach((filePath) => {
     if (filePath.startsWith(implicitModuleRoot)) {
-      return implicitModuleRoot;
+      return;
     }
 
     const currParts = filePath.split(path.sep);
@@ -55,7 +58,9 @@ function getImplicitModuleRoot() {
 
     for (let i = 0; i < currParts.length; ++i) {
       if (currParts[i] !== nearestParts[i]) {
-        return currParts.slice(0, i).join(path.sep);
+        implicitModuleRoot = currParts.slice(0, i).join(path.sep);
+
+        return;
       }
     }
   });
