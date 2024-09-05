@@ -29,6 +29,7 @@ const leadingPathSegmentRegEx = /^(.?.[/\\])+/;
 
 const moduleInfos = {};
 const fileNodes = {};
+const resolvedPathCache = new Set();
 
 // Without explicit module ids, JSDoc will use the nearest shared parent directory
 /** @type {string} */
@@ -71,6 +72,10 @@ function getImplicitModuleRoot() {
 }
 
 function getModuleId(modulePath) {
+  if (moduleInfos[modulePath]) {
+    return moduleInfos[modulePath].id;
+  }
+
   // Use moduleRoot if set
   if (moduleRootAbsolute) {
     return path
@@ -103,13 +108,39 @@ function getModuleId(modulePath) {
     .replace(extensionReplaceRegEx, '');
 }
 
+/**
+ * Checks for the existence of `modulePath`, and if it doesn't exist, checks for `modulePath/index.js`.
+ * @param {string} from The path to the module.
+ * @param {string} to The path to the module.
+ * @return {string | null} The resolved path or null if it can't be resolved.
+ */
+function getResolvedPath(from, to) {
+  let resolvedPath = path.resolve(from, to);
+
+  if (resolvedPathCache.has(resolvedPath) || fs.existsSync(resolvedPath)) {
+    resolvedPathCache.add(resolvedPath);
+
+    return resolvedPath;
+  }
+
+  resolvedPath = resolvedPath.replace(extensionEnsureRegEx, '/index.js');
+
+  if (resolvedPathCache.has(resolvedPath) || fs.existsSync(resolvedPath)) {
+    resolvedPathCache.add(resolvedPath);
+
+    return resolvedPath;
+  }
+
+  return null;
+}
+
 function getModuleInfo(modulePath, parser) {
+  if (!modulePath) {
+    return null;
+  }
+
   if (!moduleInfos[modulePath]) {
     if (!fileNodes[modulePath]) {
-      if (!fs.existsSync(modulePath)) {
-        return null;
-      }
-
       const file = fs.readFileSync(modulePath, 'UTF-8');
 
       fileNodes[modulePath] = parser.astBuilder.build(file, modulePath);
@@ -157,7 +188,7 @@ function getDelimiter(modulePath, symbol) {
   return getModuleInfo(modulePath).namedExports[symbol] ? '.' : '~';
 }
 
-function withJsExt(filePath) {
+function ensureJsExt(filePath) {
   return filePath.replace(extensionEnsureRegEx, '.js');
 }
 
@@ -327,23 +358,24 @@ exports.astNodeVisitor = {
               lines.push(lines[lines.length - 1]);
               const identifier = identifiers[node.superClass.name];
               if (identifier) {
-                const absolutePath = path.resolve(
+                const absolutePath = getResolvedPath(
                   path.dirname(currentSourceName),
-                  withJsExt(identifier.value)
+                  ensureJsExt(identifier.value)
                 );
+                const moduleInfo = getModuleInfo(absolutePath, parser);
 
-                if (getModuleInfo(absolutePath, parser)) {
-                  const moduleId = moduleInfos[absolutePath].id;
-
+                if (moduleInfo) {
                   const exportName = identifier.defaultImport
                     ? getDefaultExportName(absolutePath)
                     : node.superClass.name;
+
                   const delimiter = identifier.defaultImport
                     ? '~'
                     : getDelimiter(absolutePath, exportName);
+
                   lines[lines.length - 2] =
                     ' * @extends ' +
-                    `module:${moduleId.replace(slashRegEx, '/')}${
+                    `module:${moduleInfo.id.replace(slashRegEx, '/')}${
                       exportName ? delimiter + exportName : ''
                     }`;
                 }
@@ -395,23 +427,26 @@ exports.astNodeVisitor = {
                 replaceAttempt = 0;
               }
               lastImportPath = importExpression;
-              const rel = path.resolve(
+
+              const rel = getResolvedPath(
                 path.dirname(currentSourceName),
-                withJsExt(importSource)
+                ensureJsExt(importSource)
               );
+              const moduleInfo = getModuleInfo(rel, parser);
 
-              if (getModuleInfo(rel, parser)) {
-                const moduleId = moduleInfos[rel].id;
-
+              if (moduleInfo) {
                 const name =
                   exportName === 'default'
                     ? getDefaultExportName(rel)
                     : exportName;
+
                 const delimiter =
                   exportName === 'default' ? '~' : getDelimiter(rel, name);
-                replacement = `module:${moduleId.replace(slashRegEx, '/')}${
-                  name ? delimiter + name : ''
-                }`;
+
+                replacement = `module:${moduleInfo.id.replace(
+                  slashRegEx,
+                  '/'
+                )}${name ? delimiter + name : ''}`;
               }
             }
             if (replacement) {
@@ -451,24 +486,26 @@ exports.astNodeVisitor = {
             function replace(regex) {
               if (regex.test(comment.value)) {
                 const identifier = identifiers[key];
-                const absolutePath = path.resolve(
+                const absolutePath = getResolvedPath(
                   path.dirname(currentSourceName),
-                  withJsExt(identifier.value)
+                  ensureJsExt(identifier.value)
                 );
+                const moduleInfo = getModuleInfo(absolutePath, parser);
 
-                if (getModuleInfo(absolutePath, parser)) {
-                  const moduleId = moduleInfos[absolutePath].id;
-
+                if (moduleInfo) {
                   const exportName = identifier.defaultImport
                     ? getDefaultExportName(absolutePath)
                     : key;
+
                   const delimiter = identifier.defaultImport
                     ? '~'
                     : getDelimiter(absolutePath, exportName);
-                  const replacement = `module:${moduleId.replace(
+
+                  const replacement = `module:${moduleInfo.id.replace(
                     slashRegEx,
                     '/'
                   )}${exportName ? delimiter + exportName : ''}`;
+
                   comment.value = comment.value.replace(
                     regex,
                     '@$1' + replacement + '$2'
