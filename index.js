@@ -14,7 +14,7 @@ if (moduleRootAbsolute && !fs.existsSync(moduleRootAbsolute)) {
   throw new Error(
     'Directory "' +
       moduleRootAbsolute +
-      '" does not exist. Check the "typescript.moduleRoot" config option for jsdoc-plugin-typescript'
+      '" does not exist. Check the "typescript.moduleRoot" config option for jsdoc-plugin-typescript',
   );
 }
 
@@ -236,7 +236,7 @@ exports.defineTags = function (dictionary) {
         }
         throw new Error("Missing closing '}'");
       };
-    }
+    },
   );
 };
 
@@ -327,10 +327,10 @@ exports.astNodeVisitor = {
             if (
               leadingComments.length === 0 ||
               (leadingComments[leadingComments.length - 1].value.indexOf(
-                '@classdesc'
+                '@classdesc',
               ) === -1 &&
                 noClassdescRegEx.test(
-                  leadingComments[leadingComments.length - 1].value
+                  leadingComments[leadingComments.length - 1].value,
                 ))
             ) {
               // Create a suitable comment node if we don't have one on the class yet
@@ -348,7 +348,7 @@ exports.astNodeVisitor = {
             if (node.superClass) {
               // Remove the `@extends` tag because JSDoc does not does not handle generic type. (`@extends {Base<Type>}`)
               const extendsIndex = lines.findIndex((line) =>
-                line.includes('@extends')
+                line.includes('@extends'),
               );
               if (extendsIndex !== -1) {
                 lines.splice(extendsIndex, 1);
@@ -360,7 +360,7 @@ exports.astNodeVisitor = {
               if (identifier) {
                 const absolutePath = getResolvedPath(
                   path.dirname(currentSourceName),
-                  ensureJsExt(identifier.value)
+                  ensureJsExt(identifier.value),
                 );
                 const moduleInfo = getModuleInfo(absolutePath, parser);
 
@@ -392,7 +392,7 @@ exports.astNodeVisitor = {
           // Replace typeof Foo with Class<Foo>
           comment.value = comment.value.replace(
             /typeof ([^,\|\}\>]*)([,\|\}\>])/g,
-            'Class<$1>$2'
+            'Class<$1>$2',
           );
 
           // Remove `@override` annotations to avoid JSDoc breaking the inheritance chain
@@ -420,7 +420,7 @@ exports.astNodeVisitor = {
                 if (replaceAttempt > 100) {
                   // infinite loop protection
                   throw new Error(
-                    `Invalid docstring ${comment.value} in ${currentSourceName}.`
+                    `Invalid docstring ${comment.value} in ${currentSourceName}.`,
                   );
                 }
               } else {
@@ -430,7 +430,7 @@ exports.astNodeVisitor = {
 
               const rel = getResolvedPath(
                 path.dirname(currentSourceName),
-                ensureJsExt(importSource)
+                ensureJsExt(importSource),
               );
               const moduleInfo = getModuleInfo(rel, parser);
 
@@ -445,14 +445,14 @@ exports.astNodeVisitor = {
 
                 replacement = `module:${moduleInfo.id.replace(
                   slashRegEx,
-                  '/'
+                  '/',
                 )}${name ? delimiter + name : ''}`;
               }
             }
             if (replacement) {
               comment.value = comment.value.replace(
                 importExpression,
-                replacement + remainder
+                replacement + remainder,
               );
             }
           }
@@ -473,13 +473,13 @@ exports.astNodeVisitor = {
           Object.keys(identifiers).forEach((key) => {
             const eventRegex = new RegExp(
               `@(event |fires )${key}([^A-Za-z])`,
-              'g'
+              'g',
             );
             replace(eventRegex);
 
             const typeRegex = new RegExp(
               `@(.*[{<|,(!?:]\\s*)${key}([^A-Za-z].*?\}|\})`,
-              'g'
+              'g',
             );
             replace(typeRegex);
 
@@ -488,7 +488,7 @@ exports.astNodeVisitor = {
                 const identifier = identifiers[key];
                 const absolutePath = getResolvedPath(
                   path.dirname(currentSourceName),
-                  ensureJsExt(identifier.value)
+                  ensureJsExt(identifier.value),
                 );
                 const moduleInfo = getModuleInfo(absolutePath, parser);
 
@@ -503,12 +503,12 @@ exports.astNodeVisitor = {
 
                   const replacement = `module:${moduleInfo.id.replace(
                     slashRegEx,
-                    '/'
+                    '/',
                   )}${exportName ? delimiter + exportName : ''}`;
 
                   comment.value = comment.value.replace(
                     regex,
-                    '@$1' + replacement + '$2'
+                    '@$1' + replacement + '$2',
                   );
                 }
               }
