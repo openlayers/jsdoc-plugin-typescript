@@ -238,6 +238,49 @@
     "memberof": "module:test"
   },
   {
+    "comment": "/** @ignore */",
+    "meta": {
+      "range": [
+        434,
+        465
+      ],
+      "filename": "LeadingComments.js",
+      "lineno": 14,
+      "columnno": 0,
+      "code": {
+        "name": "exports.LeadingComments",
+        "type": "ClassDeclaration"
+      }
+    },
+    "ignore": true,
+    "name": "LeadingComments",
+    "longname": "LeadingComments",
+    "kind": "class",
+    "scope": "global"
+  },
+  {
+    "comment": "/**\n * Doclet\n */",
+    "meta": {
+      "range": [
+        441,
+        465
+      ],
+      "filename": "LeadingComments.js",
+      "lineno": 14,
+      "columnno": 7,
+      "code": {
+        "name": "LeadingComments",
+        "type": "ClassDeclaration",
+        "paramnames": []
+      }
+    },
+    "classdesc": "Doclet",
+    "name": "LeadingComments",
+    "longname": "LeadingComments",
+    "kind": "class",
+    "scope": "global"
+  },
+  {
     "comment": "/**\n * @module test/sub/NumberStore\n */",
     "meta": {
       "filename": "NumberStore.js",
