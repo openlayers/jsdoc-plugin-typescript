@@ -250,7 +250,7 @@
     "longname": "module:test/sub/NumberStore"
   },
   {
-    "comment": "/**\n * @typedef {Object} Options\n * @property {number} num A number.\n */",
+    "comment": "/**\n * @typedef {Object} Options\n * @property {number} number A number.\n */",
     "meta": {
       "filename": "NumberStore.js",
       "lineno": 5,
@@ -272,7 +272,7 @@
           ]
         },
         "description": "A number.",
-        "name": "num"
+        "name": "number"
       }
     ],
     "longname": "module:test/sub/NumberStore~Options",
@@ -283,8 +283,8 @@
     "comment": "/**\n * @classdesc\n * A test class.\n */",
     "meta": {
       "range": [
-        154,
-        432
+        157,
+        435
       ],
       "filename": "NumberStore.js",
       "lineno": 14,
@@ -309,8 +309,8 @@
     "comment": "/**\n   * @param {module:sub/NumberStore~Options} options The options.\n   */",
     "meta": {
       "range": [
-        231,
-        343
+        234,
+        346
       ],
       "filename": "NumberStore.js",
       "lineno": 18,
@@ -348,8 +348,8 @@
     "comment": "/**\n * @classdesc\n * A test class.\n */",
     "meta": {
       "range": [
-        154,
-        432
+        157,
+        435
       ],
       "filename": "NumberStore.js",
       "lineno": 14,
@@ -384,8 +384,8 @@
     "comment": "/**\n     * @type {number}\n     * @private\n     */",
     "meta": {
       "range": [
-        312,
-        338
+        315,
+        341
       ],
       "filename": "NumberStore.js",
       "lineno": 23,
@@ -413,8 +413,8 @@
     "comment": "/**\n   * @return {number} A number.\n   */",
     "meta": {
       "range": [
-        391,
-        430
+        394,
+        433
       ],
       "filename": "NumberStore.js",
       "lineno": 29,
@@ -449,8 +449,8 @@
     "comment": "",
     "meta": {
       "range": [
-        434,
-        461
+        437,
+        464
       ],
       "filename": "NumberStore.js",
       "lineno": 34,

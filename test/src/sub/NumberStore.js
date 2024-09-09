@@ -4,7 +4,7 @@
 
 /**
  * @typedef {Object} Options
- * @property {number} num A number.
+ * @property {number} number A number.
  */
 
 /**
