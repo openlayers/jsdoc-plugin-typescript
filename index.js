@@ -27,7 +27,7 @@ if (!fs.existsSync(moduleRootAbsolute)) {
 
 const importRegEx =
   /import\(["']([^"']*)["']\)(?:\.([^ \.\|\}><,\)=#\n]*))?([ \.\|\}><,\)=#\n])/g;
-const typedefRegEx = /@typedef \{[^\}]*\} (\S+)/g;
+const typedefRegEx = /@typedef\s*(?:\{[^\}]*\}\s*)?([^\{\}\s]+)/g;
 const noClassdescRegEx = /@(typedef|module|type)/;
 const extensionReplaceRegEx = /\.m?js$/;
 const slashRegEx = /\\/g;
