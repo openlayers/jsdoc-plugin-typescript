@@ -4,20 +4,6 @@ const fs = require('fs');
 const env = require('jsdoc/env'); // eslint-disable-line import/no-unresolved
 const addInherited = require('jsdoc/augment').addInherited; // eslint-disable-line import/no-unresolved
 
-const config = env.conf;
-const moduleRoot = config.typescript ? config.typescript.moduleRoot : undefined;
-const moduleRootAbsolute = moduleRoot
-  ? path.join(process.cwd(), moduleRoot)
-  : undefined;
-
-if (moduleRootAbsolute && !fs.existsSync(moduleRootAbsolute)) {
-  throw new Error(
-    'Directory "' +
-      moduleRootAbsolute +
-      '" does not exist. Check the "typescript.moduleRoot" config option for jsdoc-plugin-typescript',
-  );
-}
-
 const importRegEx =
   /import\(["']([^"']*)["']\)(?:\.([^ \.\|\}><,\)=#\n]*))?([ \.\|\}><,\)=#\n])/g;
 const typedefRegEx = /@typedef \{[^\}]*\} (\S+)/g;
@@ -25,13 +11,11 @@ const noClassdescRegEx = /@(typedef|module|type)/;
 const extensionReplaceRegEx = /\.m?js$/;
 const extensionEnsureRegEx = /(\.js)?$/;
 const slashRegEx = /\\/g;
-const leadingPathSegmentRegEx = /^(.?.[/\\])+/;
 
 const moduleInfos = {};
 const fileNodes = {};
 const resolvedPathCache = new Set();
 
-// Without explicit module ids, JSDoc will use the nearest shared parent directory
 /** @type {string} */
 let implicitModuleRoot;
 
@@ -74,14 +58,6 @@ function getImplicitModuleRoot() {
 function getModuleId(modulePath) {
   if (moduleInfos[modulePath]) {
     return moduleInfos[modulePath].id;
-  }
-
-  // Use moduleRoot if set
-  if (moduleRootAbsolute) {
-    return path
-      .relative(moduleRootAbsolute, modulePath)
-      .replace(extensionReplaceRegEx, '')
-      .replace(leadingPathSegmentRegEx, '');
   }
 
   // Search for explicit module id

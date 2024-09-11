@@ -14,20 +14,9 @@ To configure JSDoc to use the plugin, add the following to the JSDoc configurati
 "plugins": [
   "jsdoc-plugin-typescript"
 ],
-"typescript": {
-  "moduleRoot": "src" // optional
-}
 ```
 
 See http://usejsdoc.org/about-configuring-jsdoc.html for more details on how to configure JSDoc.
-
-If `typescript.moduleRoot` is specified, the plugin will assume module ids are relative to that directory and format them as such. For example, `@type {import("./folder/file").Class}` will be converted to `@type {module:folder/file.Class}`. The file extension is removed along with any leading `../` segments (if the referenced module is outside `moduleRoot`).
-
-In the absence of `typescript.moduleRoot`, the plugin will mirror the method JSDoc uses to assign module ids:
-
-1. Parse the referenced module for an `@module` tag.
-2. If a tag is found and it has an explicit id, use that.
-3. If a tag is found, but it doesn't have an explicit id, use the module's file path relative to the nearest shared parent directory, and remove the file extension.
 
 ## What this plugin does
 
@@ -120,6 +109,14 @@ This syntax is also used when referring to types of `@typedef`s and `@enum`s.
  * @type {'static:${dynamic}'}
  */
 ```
+
+## Module id resolution
+
+For resolving module ids, this plugin mirrors the method used by JSDoc:
+
+1. Parse the referenced module for an `@module` tag.
+2. If a tag is found and it has an explicit id, use that.
+3. If a tag is found, but it doesn't have an explicit id, use the module's file path relative to the nearest shared parent directory, and remove the file extension.
 
 ## Contributing
 
