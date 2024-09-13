@@ -238,11 +238,11 @@
     "memberof": "module:test"
   },
   {
-    "comment": "/**\n * @type {{a: number; b: string;}}\n */",
+    "comment": "/**\n * @type {{a: number; b: string;c:{a:number},d: {a:number;b:string,c:number }; e: \"{a: number; b: string;}\"; }}\n */",
     "meta": {
       "range": [
-        618,
-        675
+        695,
+        752
       ],
       "filename": "index.js",
       "lineno": 33,
@@ -267,8 +267,8 @@
     "comment": "",
     "meta": {
       "range": [
-        631,
-        674
+        708,
+        751
       ],
       "filename": "index.js",
       "lineno": 33,
@@ -291,8 +291,8 @@
     "comment": "",
     "meta": {
       "range": [
-        657,
-        661
+        734,
+        738
       ],
       "filename": "index.js",
       "lineno": 34,
@@ -314,8 +314,8 @@
     "comment": "",
     "meta": {
       "range": [
-        665,
-        671
+        742,
+        748
       ],
       "filename": "index.js",
       "lineno": 35,
@@ -337,8 +337,8 @@
     "comment": "/**\n * @type {(...args: Parameters<Class<getNumberStore>>) => void}\n */",
     "meta": {
       "range": [
-        749,
-        797
+        826,
+        874
       ],
       "filename": "index.js",
       "lineno": 41,
@@ -363,8 +363,8 @@
     "comment": "",
     "meta": {
       "range": [
-        762,
-        796
+        839,
+        873
       ],
       "filename": "index.js",
       "lineno": 41,
@@ -383,11 +383,11 @@
     "params": []
   },
   {
-    "comment": "/**\n * @type {(a: () => void | () => void) => void}\n */",
+    "comment": "/**\n * @type {(a: () => void | (a: {a: string; b: number;}) => void) => void}\n */",
     "meta": {
       "range": [
-        855,
-        909
+        958,
+        1012
       ],
       "filename": "index.js",
       "lineno": 46,
@@ -412,8 +412,8 @@
     "comment": "",
     "meta": {
       "range": [
-        868,
-        908
+        971,
+        1011
       ],
       "filename": "index.js",
       "lineno": 46,
@@ -435,8 +435,8 @@
     "comment": "/**\n * @type {function(number): void}\n */",
     "meta": {
       "range": [
-        953,
-        1004
+        1056,
+        1107
       ],
       "filename": "index.js",
       "lineno": 51,
@@ -461,8 +461,8 @@
     "comment": "",
     "meta": {
       "range": [
-        966,
-        1003
+        1069,
+        1106
       ],
       "filename": "index.js",
       "lineno": 51,
@@ -484,8 +484,8 @@
     "comment": "/**\n * @type {interfaceSeparators['a']}\n */",
     "meta": {
       "range": [
-        1050,
-        1083
+        1153,
+        1186
       ],
       "filename": "index.js",
       "lineno": 56,
@@ -510,8 +510,8 @@
     "comment": "",
     "meta": {
       "range": [
-        1063,
-        1082
+        1166,
+        1185
       ],
       "filename": "index.js",
       "lineno": 56,

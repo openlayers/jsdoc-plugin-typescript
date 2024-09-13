@@ -28,7 +28,7 @@ export function getNumberStore(number) {
 }
 
 /**
- * @type {{a: number; b: string;}}
+ * @type {{a: number; b: string;c:{a:number},d: {a:number;b:string,c:number }; e: "{a: number; b: string;}"; }}
  */
 export const interfaceSeparators = {
   a: 1,
@@ -41,7 +41,7 @@ export const interfaceSeparators = {
 export const tsFunctionSyntax = (...args) => {};
 
 /**
- * @type {(a: () => void | () => void) => void}
+ * @type {(a: () => void | (a: {a: string; b: number;}) => void) => void}
  */
 export const tsFunctionSyntaxNested = (...args) => {};
 
