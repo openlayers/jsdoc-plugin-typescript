@@ -5,17 +5,10 @@
     "destination": "test/dest/actual.json"
   },
   "source": {
-    "include": [
-      "test/src"
-    ]
+    "include": ["test/src"]
   },
   "tags": {
     "allowUnknownTags": true
   },
-  "plugins": [
-    "index.js"
-  ],
-  "typescript": {
-    "moduleRoot": "test/src"
-  }
+  "plugins": ["index.js"]
 }

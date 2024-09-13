@@ -144,7 +144,7 @@
     "params": []
   },
   {
-    "comment": "/**\n * @param {number} number A number.\n * @return {module:sub/NumberStore~NumberStore} A number store.\n */",
+    "comment": "/**\n * @param {number} number A number.\n * @return {module:test/sub/NumberStore~NumberStore} A number store.\n */",
     "meta": {
       "range": [
         495,
@@ -176,7 +176,7 @@
       {
         "type": {
           "names": [
-            "module:sub/NumberStore~NumberStore"
+            "module:test/sub/NumberStore~NumberStore"
           ]
         },
         "description": "A number store."
@@ -306,7 +306,7 @@
     "undocumented": true
   },
   {
-    "comment": "/**\n   * @param {module:sub/NumberStore~Options} options The options.\n   */",
+    "comment": "/**\n   * @param {module:test/sub/NumberStore~Options} options The options.\n   */",
     "meta": {
       "range": [
         234,
@@ -330,7 +330,7 @@
       {
         "type": {
           "names": [
-            "module:sub/NumberStore~Options"
+            "module:test/sub/NumberStore~Options"
           ]
         },
         "description": "The options.",
@@ -372,7 +372,7 @@
       {
         "type": {
           "names": [
-            "module:sub/NumberStore~Options"
+            "module:test/sub/NumberStore~Options"
           ]
         },
         "description": "The options.",
