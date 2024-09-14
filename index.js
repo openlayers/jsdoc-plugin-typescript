@@ -168,52 +168,166 @@ function ensureJsExt(filePath) {
   return filePath.replace(extensionEnsureRegEx, '.js');
 }
 
+/**
+ * Replaces text by indices where each element of `replacements` is `[startIndex, endIndex, replacement]`.
+ *
+ * Note: This function does not handle nested replacements.
+ *
+ * @param {string} text The text to replace
+ * @param {Array<[number, number, string]>} replacements The replacements to apply
+ * @return {string} The text with replacements applied
+ */
+function replaceByIndices(text, replacements) {
+  let offset = 0;
+  let replacedText = text;
+
+  replacements.forEach(([startIndex, endIndex, replacement], i) => {
+    const head = replacedText.slice(0, startIndex + offset);
+    const tail = replacedText.slice(endIndex + offset);
+
+    replacedText = head + replacement + tail;
+
+    offset += replacement.length - (endIndex - startIndex);
+  });
+
+  return replacedText;
+}
+
 exports.defineTags = function (dictionary) {
-  ['type', 'typedef', 'property', 'return', 'param', 'template'].forEach(
-    function (tagName) {
-      const tag = dictionary.lookUp(tagName);
-      const oldOnTagText = tag.onTagText;
-      tag.onTagText = function (tagText) {
-        if (oldOnTagText) {
-          tagText = oldOnTagText.apply(this, arguments);
-        }
-        // Replace `templateliteral` with 'templateliteral'
-        const startIndex = tagText.search('{');
-        if (startIndex === -1) {
-          return tagText;
-        }
-        const len = tagText.length;
-        let open = 0;
-        let i = startIndex;
-        while (i < len) {
-          switch (tagText[i]) {
-            case '\\':
-              // Skip escaped character
-              ++i;
-              break;
-            case '{':
-              ++open;
-              break;
-            case '}':
-              if (!--open) {
-                return (
-                  tagText.slice(0, startIndex) +
-                  tagText
-                    .slice(startIndex, i + 1)
-                    .replace(/`([^`]*)`/g, "'$1'") +
-                  tagText.slice(i + 1)
+  const tags = [
+    'type',
+    'typedef',
+    'property',
+    'return',
+    'param',
+    'template',
+    'default',
+    'member',
+  ];
+
+  tags.forEach(function (tagName) {
+    const tag = dictionary.lookUp(tagName);
+    const oldOnTagText = tag.onTagText;
+
+    /**
+     * @param {string} tagText The tag text
+     * @return {string} The modified tag text
+     */
+    tag.onTagText = function (tagText) {
+      if (oldOnTagText) {
+        tagText = oldOnTagText.apply(this, arguments);
+      }
+
+      const startIndex = tagText.search('{');
+      if (startIndex === -1) {
+        return tagText;
+      }
+
+      const len = tagText.length;
+
+      /** @type {Array<[number, number, string]>} */
+      let replacements = [];
+      let openCurly = 0;
+      let openRound = 0;
+      let isWithinString = false;
+      let quoteChar = '';
+      let i = startIndex;
+      let functionStartIndex;
+
+      while (i < len) {
+        switch (tagText[i]) {
+          case '\\':
+            // Skip escaped character
+            ++i;
+            break;
+          case '"':
+          case "'":
+            if (isWithinString && quoteChar === tagText[i]) {
+              isWithinString = false;
+              quoteChar = '';
+            } else if (!isWithinString) {
+              isWithinString = true;
+              quoteChar = tagText[i];
+            }
+
+            break;
+          case ';':
+            // Replace interface-style semi-colon separators with commas
+            if (!isWithinString && openCurly > 1) {
+              const isTrailingSemiColon = /^\s*}/.test(tagText.slice(i + 1));
+
+              replacements.push([i, i + 1, isTrailingSemiColon ? '' : ',']);
+            }
+
+            break;
+          case '(':
+            if (openRound === 0) {
+              functionStartIndex = i;
+            }
+
+            ++openRound;
+
+            break;
+          case ')':
+            if (!--openRound) {
+              // If round brackets form a function
+              const returnMatch = tagText.slice(i + 1).match(/^\s*(:|=>)/);
+
+              // Replace TS inline function syntax with JSDoc
+              if (returnMatch) {
+                const functionEndIndex = i + returnMatch[0].length + 1;
+                const hasFunctionKeyword = /\bfunction\s*$/.test(
+                  tagText.slice(0, functionStartIndex),
                 );
+
+                // Filter out any replacements that are within the function
+                replacements = replacements.filter(([startIndex]) => {
+                  return startIndex < functionStartIndex || startIndex > i;
+                });
+
+                replacements.push([
+                  functionStartIndex,
+                  functionEndIndex,
+                  hasFunctionKeyword ? '():' : 'function():',
+                ]);
               }
-              break;
-            default:
-              break;
-          }
-          ++i;
+
+              functionStartIndex = null;
+            }
+
+            break;
+          case '{':
+            ++openCurly;
+            break;
+          case '}':
+            if (!--openCurly) {
+              const head = tagText.slice(0, startIndex);
+              const tail = tagText.slice(i + 1);
+
+              const replaced = replaceByIndices(
+                tagText.slice(startIndex, i + 1),
+                replacements,
+              )
+                // Replace `templateliteral` with 'templateliteral'
+                .replace(/`([^`]*)`/g, "'$1'")
+                // Bracket notation to dot notation
+                .replace(
+                  /(\w+|>|\)|\])\[(?:'([^']+)'|"([^"]+)")\]/g,
+                  '$1.$2$3',
+                );
+
+              return head + replaced + tail;
+            }
+
+            break;
+          default:
+            break;
         }
-        throw new Error("Missing closing '}'");
-      };
-    },
-  );
+        ++i;
+      }
+      throw new Error("Missing closing '}'");
+    };
+  });
 };
 
 exports.astNodeVisitor = {

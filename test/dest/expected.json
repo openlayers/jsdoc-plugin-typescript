@@ -238,6 +238,299 @@
     "memberof": "module:test"
   },
   {
+    "comment": "/**\n * @type {{a: number; b: string;c:{a:number},d: {a:number;b:string,c:number }; e: \"{a: number; b: string;}\"; }}\n */",
+    "meta": {
+      "range": [
+        695,
+        752
+      ],
+      "filename": "index.js",
+      "lineno": 33,
+      "columnno": 0,
+      "code": {
+        "name": "exports.interfaceSeparators",
+        "type": "VariableDeclaration"
+      }
+    },
+    "type": {
+      "names": [
+        "Object"
+      ]
+    },
+    "name": "interfaceSeparators",
+    "longname": "module:test.interfaceSeparators",
+    "kind": "constant",
+    "memberof": "module:test",
+    "scope": "static"
+  },
+  {
+    "comment": "",
+    "meta": {
+      "range": [
+        708,
+        751
+      ],
+      "filename": "index.js",
+      "lineno": 33,
+      "columnno": 13,
+      "code": {
+        "name": "interfaceSeparators",
+        "type": "ObjectExpression",
+        "value": "{\"a\":1,\"b\":\"2\"}"
+      }
+    },
+    "undocumented": true,
+    "name": "interfaceSeparators",
+    "longname": "module:test~interfaceSeparators",
+    "kind": "constant",
+    "scope": "inner",
+    "memberof": "module:test",
+    "params": []
+  },
+  {
+    "comment": "",
+    "meta": {
+      "range": [
+        734,
+        738
+      ],
+      "filename": "index.js",
+      "lineno": 34,
+      "columnno": 2,
+      "code": {
+        "name": "a",
+        "type": "Literal",
+        "value": 1
+      }
+    },
+    "undocumented": true,
+    "name": "a",
+    "longname": "module:test~interfaceSeparators.a",
+    "kind": "member",
+    "memberof": "module:test~interfaceSeparators",
+    "scope": "static"
+  },
+  {
+    "comment": "",
+    "meta": {
+      "range": [
+        742,
+        748
+      ],
+      "filename": "index.js",
+      "lineno": 35,
+      "columnno": 2,
+      "code": {
+        "name": "b",
+        "type": "Literal",
+        "value": "2"
+      }
+    },
+    "undocumented": true,
+    "name": "b",
+    "longname": "module:test~interfaceSeparators.b",
+    "kind": "member",
+    "memberof": "module:test~interfaceSeparators",
+    "scope": "static"
+  },
+  {
+    "comment": "/**\n * @type {(...args: Parameters<Class<getNumberStore>>) => void}\n */",
+    "meta": {
+      "range": [
+        826,
+        874
+      ],
+      "filename": "index.js",
+      "lineno": 41,
+      "columnno": 0,
+      "code": {
+        "name": "exports.tsFunctionSyntax",
+        "type": "VariableDeclaration"
+      }
+    },
+    "type": {
+      "names": [
+        "function"
+      ]
+    },
+    "name": "tsFunctionSyntax",
+    "longname": "module:test.tsFunctionSyntax",
+    "kind": "constant",
+    "memberof": "module:test",
+    "scope": "static"
+  },
+  {
+    "comment": "",
+    "meta": {
+      "range": [
+        839,
+        873
+      ],
+      "filename": "index.js",
+      "lineno": 41,
+      "columnno": 13,
+      "code": {
+        "name": "tsFunctionSyntax",
+        "type": "ArrowFunctionExpression"
+      }
+    },
+    "undocumented": true,
+    "name": "tsFunctionSyntax",
+    "longname": "module:test~tsFunctionSyntax",
+    "kind": "function",
+    "scope": "inner",
+    "memberof": "module:test",
+    "params": []
+  },
+  {
+    "comment": "/**\n * @type {(a: () => void | (a: {a: string; b: number;}) => void) => void}\n */",
+    "meta": {
+      "range": [
+        958,
+        1012
+      ],
+      "filename": "index.js",
+      "lineno": 46,
+      "columnno": 0,
+      "code": {
+        "name": "exports.tsFunctionSyntaxNested",
+        "type": "VariableDeclaration"
+      }
+    },
+    "type": {
+      "names": [
+        "function"
+      ]
+    },
+    "name": "tsFunctionSyntaxNested",
+    "longname": "module:test.tsFunctionSyntaxNested",
+    "kind": "constant",
+    "memberof": "module:test",
+    "scope": "static"
+  },
+  {
+    "comment": "",
+    "meta": {
+      "range": [
+        971,
+        1011
+      ],
+      "filename": "index.js",
+      "lineno": 46,
+      "columnno": 13,
+      "code": {
+        "name": "tsFunctionSyntaxNested",
+        "type": "ArrowFunctionExpression"
+      }
+    },
+    "undocumented": true,
+    "name": "tsFunctionSyntaxNested",
+    "longname": "module:test~tsFunctionSyntaxNested",
+    "kind": "function",
+    "scope": "inner",
+    "memberof": "module:test",
+    "params": []
+  },
+  {
+    "comment": "/**\n * @type {function(number): void}\n */",
+    "meta": {
+      "range": [
+        1056,
+        1107
+      ],
+      "filename": "index.js",
+      "lineno": 51,
+      "columnno": 0,
+      "code": {
+        "name": "exports.jsdocFunctionSyntax",
+        "type": "VariableDeclaration"
+      }
+    },
+    "type": {
+      "names": [
+        "function"
+      ]
+    },
+    "name": "jsdocFunctionSyntax",
+    "longname": "module:test.jsdocFunctionSyntax",
+    "kind": "constant",
+    "memberof": "module:test",
+    "scope": "static"
+  },
+  {
+    "comment": "",
+    "meta": {
+      "range": [
+        1069,
+        1106
+      ],
+      "filename": "index.js",
+      "lineno": 51,
+      "columnno": 13,
+      "code": {
+        "name": "jsdocFunctionSyntax",
+        "type": "ArrowFunctionExpression"
+      }
+    },
+    "undocumented": true,
+    "name": "jsdocFunctionSyntax",
+    "longname": "module:test~jsdocFunctionSyntax",
+    "kind": "function",
+    "scope": "inner",
+    "memberof": "module:test",
+    "params": []
+  },
+  {
+    "comment": "/**\n * @type {interfaceSeparators['a']}\n */",
+    "meta": {
+      "range": [
+        1153,
+        1186
+      ],
+      "filename": "index.js",
+      "lineno": 56,
+      "columnno": 0,
+      "code": {
+        "name": "exports.bracketNotation",
+        "type": "VariableDeclaration"
+      }
+    },
+    "type": {
+      "names": [
+        "interfaceSeparators.a"
+      ]
+    },
+    "name": "bracketNotation",
+    "longname": "module:test.bracketNotation",
+    "kind": "constant",
+    "memberof": "module:test",
+    "scope": "static"
+  },
+  {
+    "comment": "",
+    "meta": {
+      "range": [
+        1166,
+        1185
+      ],
+      "filename": "index.js",
+      "lineno": 56,
+      "columnno": 13,
+      "code": {
+        "name": "bracketNotation",
+        "type": "Literal",
+        "value": 1
+      }
+    },
+    "undocumented": true,
+    "name": "bracketNotation",
+    "longname": "module:test~bracketNotation",
+    "kind": "constant",
+    "scope": "inner",
+    "memberof": "module:test",
+    "params": []
+  },
+  {
     "comment": "/** @ignore */",
     "meta": {
       "range": [
