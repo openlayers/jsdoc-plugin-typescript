@@ -33,6 +33,9 @@ export function getNumberStore(number) {
 export const interfaceSeparators = {
   a: 1,
   b: '2',
+  c: {a: 3},
+  d: {a: 4, b: '5', c: 6},
+  e: '{a: number; b: string;}',
 };
 
 /**
@@ -41,7 +44,7 @@ export const interfaceSeparators = {
 export const tsFunctionSyntax = (...args) => {};
 
 /**
- * @type {(a: () => void | (a: {a: string; b: number;}) => void) => void}
+ * @type {(a: (() => void) | ((a: {a: string; b: number;}) => void)) => void}
  */
 export const tsFunctionSyntaxNested = (...args) => {};
 
@@ -54,3 +57,6 @@ export const jsdocFunctionSyntax = (...args) => {};
  * @type {interfaceSeparators['a']}
  */
 export const bracketNotation = 1;
+
+/** @type {[number, [number, string], "[number, boolean]"]} */
+export const nesteedTuples = [1, [1, 'a'], '[number, boolean]'];

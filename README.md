@@ -156,6 +156,21 @@ To:
  */
 ```
 
+### Tuples
+
+```js
+/**
+ * @type {[string, number]}
+ */
+```
+
+To:
+```js
+/**
+ * @type {Array}
+ */
+```
+
 ## Module id resolution
 
 For resolving module ids, this plugin mirrors the method used by JSDoc:

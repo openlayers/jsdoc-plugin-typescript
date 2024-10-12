@@ -11,7 +11,7 @@ const noClassdescRegEx = /@(typedef|module|type)/;
 const extensionReplaceRegEx = /\.m?js$/;
 const extensionEnsureRegEx = /(\.js)?$/;
 const slashRegEx = /\\/g;
-
+const variableNameRegEx = /^[a-zA-Z_$][0-9a-zA-Z_$]*$/;
 const moduleInfos = {};
 const fileNodes = {};
 const resolvedPathCache = new Set();
@@ -228,6 +228,7 @@ exports.defineTags = function (dictionary) {
       /** @type {Array<[number, number, string]>} */
       let replacements = [];
       let openCurly = 0;
+      let openSquare = 0;
       let openRound = 0;
       let isWithinString = false;
       let quoteChar = '';
@@ -295,6 +296,24 @@ exports.defineTags = function (dictionary) {
               functionStartIndex = null;
             }
 
+            break;
+          case '[':
+            if (
+              isWithinString ||
+              variableNameRegEx.test(tagText.charAt(i - 1))
+            ) {
+              break;
+            }
+            ++openSquare;
+            break;
+          case ']':
+            if (isWithinString) {
+              break;
+            }
+            if (!--openSquare) {
+              // Replace [type1, type2] tuples with Array
+              replacements.push([startIndex + 1, i + 1, 'Array']);
+            }
             break;
           case '{':
             ++openCurly;

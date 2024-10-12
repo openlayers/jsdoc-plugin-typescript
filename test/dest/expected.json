@@ -242,7 +242,7 @@
     "meta": {
       "range": [
         695,
-        752
+        824
       ],
       "filename": "index.js",
       "lineno": 33,
@@ -268,7 +268,7 @@
     "meta": {
       "range": [
         708,
-        751
+        823
       ],
       "filename": "index.js",
       "lineno": 33,
@@ -276,7 +276,7 @@
       "code": {
         "name": "interfaceSeparators",
         "type": "ObjectExpression",
-        "value": "{\"a\":1,\"b\":\"2\"}"
+        "value": "{\"a\":1,\"b\":\"2\",\"c\":\"\",\"d\":\"\",\"e\":\"{a: number; b: string;}\"}"
       }
     },
     "undocumented": true,
@@ -334,14 +334,175 @@
     "scope": "static"
   },
   {
+    "comment": "",
+    "meta": {
+      "range": [
+        752,
+        761
+      ],
+      "filename": "index.js",
+      "lineno": 36,
+      "columnno": 2,
+      "code": {
+        "name": "c",
+        "type": "ObjectExpression",
+        "value": "{\"a\":3}"
+      }
+    },
+    "undocumented": true,
+    "name": "c",
+    "longname": "module:test~interfaceSeparators.c",
+    "kind": "member",
+    "memberof": "module:test~interfaceSeparators",
+    "scope": "static"
+  },
+  {
+    "comment": "",
+    "meta": {
+      "range": [
+        756,
+        760
+      ],
+      "filename": "index.js",
+      "lineno": 36,
+      "columnno": 6,
+      "code": {
+        "name": "a",
+        "type": "Literal",
+        "value": 3
+      }
+    },
+    "undocumented": true,
+    "name": "a",
+    "longname": "module:test~interfaceSeparators.c.a",
+    "kind": "member",
+    "memberof": "module:test~interfaceSeparators.c",
+    "scope": "static"
+  },
+  {
+    "comment": "",
+    "meta": {
+      "range": [
+        765,
+        788
+      ],
+      "filename": "index.js",
+      "lineno": 37,
+      "columnno": 2,
+      "code": {
+        "name": "d",
+        "type": "ObjectExpression",
+        "value": "{\"a\":4,\"b\":\"5\",\"c\":6}"
+      }
+    },
+    "undocumented": true,
+    "name": "d",
+    "longname": "module:test~interfaceSeparators.d",
+    "kind": "member",
+    "memberof": "module:test~interfaceSeparators",
+    "scope": "static"
+  },
+  {
+    "comment": "",
+    "meta": {
+      "range": [
+        769,
+        773
+      ],
+      "filename": "index.js",
+      "lineno": 37,
+      "columnno": 6,
+      "code": {
+        "name": "a",
+        "type": "Literal",
+        "value": 4
+      }
+    },
+    "undocumented": true,
+    "name": "a",
+    "longname": "module:test~interfaceSeparators.d.a",
+    "kind": "member",
+    "memberof": "module:test~interfaceSeparators.d",
+    "scope": "static"
+  },
+  {
+    "comment": "",
+    "meta": {
+      "range": [
+        775,
+        781
+      ],
+      "filename": "index.js",
+      "lineno": 37,
+      "columnno": 12,
+      "code": {
+        "name": "b",
+        "type": "Literal",
+        "value": "5"
+      }
+    },
+    "undocumented": true,
+    "name": "b",
+    "longname": "module:test~interfaceSeparators.d.b",
+    "kind": "member",
+    "memberof": "module:test~interfaceSeparators.d",
+    "scope": "static"
+  },
+  {
+    "comment": "",
+    "meta": {
+      "range": [
+        783,
+        787
+      ],
+      "filename": "index.js",
+      "lineno": 37,
+      "columnno": 20,
+      "code": {
+        "name": "c",
+        "type": "Literal",
+        "value": 6
+      }
+    },
+    "undocumented": true,
+    "name": "c",
+    "longname": "module:test~interfaceSeparators.d.c",
+    "kind": "member",
+    "memberof": "module:test~interfaceSeparators.d",
+    "scope": "static"
+  },
+  {
+    "comment": "",
+    "meta": {
+      "range": [
+        792,
+        820
+      ],
+      "filename": "index.js",
+      "lineno": 38,
+      "columnno": 2,
+      "code": {
+        "name": "e",
+        "type": "Literal",
+        "value": "{a: number; b: string;}"
+      }
+    },
+    "undocumented": true,
+    "name": "e",
+    "longname": "module:test~interfaceSeparators.e",
+    "kind": "member",
+    "memberof": "module:test~interfaceSeparators",
+    "scope": "static"
+  },
+  {
     "comment": "/**\n * @type {(...args: Parameters<Class<getNumberStore>>) => void}\n */",
     "meta": {
       "range": [
-        826,
-        874
+        898,
+        946
       ],
       "filename": "index.js",
-      "lineno": 41,
+      "lineno": 44,
       "columnno": 0,
       "code": {
         "name": "exports.tsFunctionSyntax",
@@ -363,11 +524,11 @@
     "comment": "",
     "meta": {
       "range": [
-        839,
-        873
+        911,
+        945
       ],
       "filename": "index.js",
-      "lineno": 41,
+      "lineno": 44,
       "columnno": 13,
       "code": {
         "name": "tsFunctionSyntax",
@@ -383,14 +544,14 @@
     "params": []
   },
   {
-    "comment": "/**\n * @type {(a: () => void | (a: {a: string; b: number;}) => void) => void}\n */",
+    "comment": "/**\n * @type {(a: (() => void) | ((a: {a: string; b: number;}) => void)) => void}\n */",
     "meta": {
       "range": [
-        958,
-        1012
+        1034,
+        1088
       ],
       "filename": "index.js",
-      "lineno": 46,
+      "lineno": 49,
       "columnno": 0,
       "code": {
         "name": "exports.tsFunctionSyntaxNested",
@@ -412,11 +573,11 @@
     "comment": "",
     "meta": {
       "range": [
-        971,
-        1011
+        1047,
+        1087
       ],
       "filename": "index.js",
-      "lineno": 46,
+      "lineno": 49,
       "columnno": 13,
       "code": {
         "name": "tsFunctionSyntaxNested",
@@ -435,11 +596,11 @@
     "comment": "/**\n * @type {function(number): void}\n */",
     "meta": {
       "range": [
-        1056,
-        1107
+        1132,
+        1183
       ],
       "filename": "index.js",
-      "lineno": 51,
+      "lineno": 54,
       "columnno": 0,
       "code": {
         "name": "exports.jsdocFunctionSyntax",
@@ -461,11 +622,11 @@
     "comment": "",
     "meta": {
       "range": [
-        1069,
-        1106
+        1145,
+        1182
       ],
       "filename": "index.js",
-      "lineno": 51,
+      "lineno": 54,
       "columnno": 13,
       "code": {
         "name": "jsdocFunctionSyntax",
@@ -484,11 +645,11 @@
     "comment": "/**\n * @type {interfaceSeparators['a']}\n */",
     "meta": {
       "range": [
-        1153,
-        1186
+        1229,
+        1262
       ],
       "filename": "index.js",
-      "lineno": 56,
+      "lineno": 59,
       "columnno": 0,
       "code": {
         "name": "exports.bracketNotation",
@@ -510,11 +671,11 @@
     "comment": "",
     "meta": {
       "range": [
-        1166,
-        1185
+        1242,
+        1261
       ],
       "filename": "index.js",
-      "lineno": 56,
+      "lineno": 59,
       "columnno": 13,
       "code": {
         "name": "bracketNotation",
@@ -525,6 +686,56 @@
     "undocumented": true,
     "name": "bracketNotation",
     "longname": "module:test~bracketNotation",
+    "kind": "constant",
+    "scope": "inner",
+    "memberof": "module:test",
+    "params": []
+  },
+  {
+    "comment": "/** @type {[number, [number, string], \"[number, boolean]\"]} */",
+    "meta": {
+      "range": [
+        1327,
+        1391
+      ],
+      "filename": "index.js",
+      "lineno": 62,
+      "columnno": 0,
+      "code": {
+        "name": "exports.nesteedTuples",
+        "type": "VariableDeclaration"
+      }
+    },
+    "type": {
+      "names": [
+        "Array"
+      ]
+    },
+    "name": "nesteedTuples",
+    "longname": "module:test.nesteedTuples",
+    "kind": "constant",
+    "memberof": "module:test",
+    "scope": "static"
+  },
+  {
+    "comment": "",
+    "meta": {
+      "range": [
+        1340,
+        1390
+      ],
+      "filename": "index.js",
+      "lineno": 62,
+      "columnno": 13,
+      "code": {
+        "name": "nesteedTuples",
+        "type": "ArrayExpression",
+        "value": "[1,\"[1,\\\"a\\\"]\",\"[number, boolean]\"]"
+      }
+    },
+    "undocumented": true,
+    "name": "nesteedTuples",
+    "longname": "module:test~nesteedTuples",
     "kind": "constant",
     "scope": "inner",
     "memberof": "module:test",
