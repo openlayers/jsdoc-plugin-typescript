@@ -592,6 +592,23 @@ exports.astNodeVisitor = {
             );
             replace(typeRegex);
 
+            const linkWithoutTextRegex = new RegExp(
+              `@(link (?!https?))${key}(\\.[^\\s\\}]*)*(\\s*\\})`,
+              'g',
+            );
+            const linkWithTextRegex = new RegExp(
+              `@(link (?!https?))${key}((?:\\.[^\\s\\}]*)*(?:\\s|\\s*\\|)[^\\}]*\\})`,
+              'g',
+            );
+
+            // If link is without text, use key as text
+            comment.value = comment.value.replace(
+              linkWithoutTextRegex,
+              `@$1${key} ${key}$2$3`,
+            );
+
+            replace(linkWithTextRegex);
+
             function replace(regex) {
               if (regex.test(comment.value)) {
                 const identifier = identifiers[key];
