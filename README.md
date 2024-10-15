@@ -70,6 +70,39 @@ When assigned to a variable in the exporting module:
 
 This syntax is also used when referring to types of `@typedef`s and `@enum`s.
 
+### `@link` tags
+
+```js
+/**
+ * {@link Identifier}
+ */
+
+/**
+ * {@link Identifier Link text}
+ */
+
+/**
+ * {@link Identifier.member}
+ */
+```
+
+To:
+
+```js
+/**
+ * {@link module:path/to/module.Identifier Identifier}
+ */
+
+/**
+ * {@link module:path/to/module.Identifier Link text}
+ */
+
+/**
+ * Member accessors are not currently linked to, just the root identifier:
+ * {@link module:path/to/module.Identifier Identifier.member}
+ */
+```
+
 ### `typeof type`
 
 ```js
@@ -165,6 +198,7 @@ To:
 ```
 
 To:
+
 ```js
 /**
  * @type {Array}
