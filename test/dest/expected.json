@@ -742,6 +742,98 @@
     "params": []
   },
   {
+    "comment": "/**\n * {@link module:test/sub/NumberStore~NumberStore NumberStore}\n */",
+    "meta": {
+      "range": [
+        1424,
+        1456
+      ],
+      "filename": "index.js",
+      "lineno": 67,
+      "columnno": 0,
+      "code": {
+        "name": "exports.Link",
+        "type": "VariableDeclaration"
+      }
+    },
+    "description": "{@link module:test/sub/NumberStore~NumberStore NumberStore}",
+    "name": "Link",
+    "longname": "module:test.Link",
+    "kind": "constant",
+    "memberof": "module:test",
+    "scope": "static"
+  },
+  {
+    "comment": "",
+    "meta": {
+      "range": [
+        1437,
+        1455
+      ],
+      "filename": "index.js",
+      "lineno": 67,
+      "columnno": 13,
+      "code": {
+        "name": "Link",
+        "type": "Identifier",
+        "value": "NumberStore"
+      }
+    },
+    "undocumented": true,
+    "name": "Link",
+    "longname": "module:test~Link",
+    "kind": "constant",
+    "scope": "inner",
+    "memberof": "module:test",
+    "params": []
+  },
+  {
+    "comment": "/**\n * {@link module:test/sub/NumberStore~NumberStore Num}\n */",
+    "meta": {
+      "range": [
+        1493,
+        1533
+      ],
+      "filename": "index.js",
+      "lineno": 72,
+      "columnno": 0,
+      "code": {
+        "name": "exports.LinkWithText",
+        "type": "VariableDeclaration"
+      }
+    },
+    "description": "{@link module:test/sub/NumberStore~NumberStore Num}",
+    "name": "LinkWithText",
+    "longname": "module:test.LinkWithText",
+    "kind": "constant",
+    "memberof": "module:test",
+    "scope": "static"
+  },
+  {
+    "comment": "",
+    "meta": {
+      "range": [
+        1506,
+        1532
+      ],
+      "filename": "index.js",
+      "lineno": 72,
+      "columnno": 13,
+      "code": {
+        "name": "LinkWithText",
+        "type": "Identifier",
+        "value": "NumberStore"
+      }
+    },
+    "undocumented": true,
+    "name": "LinkWithText",
+    "longname": "module:test~LinkWithText",
+    "kind": "constant",
+    "scope": "inner",
+    "memberof": "module:test",
+    "params": []
+  },
+  {
     "comment": "/** @ignore */",
     "meta": {
       "range": [
