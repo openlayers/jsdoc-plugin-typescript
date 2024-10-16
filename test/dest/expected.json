@@ -742,6 +742,190 @@
     "params": []
   },
   {
+    "comment": "/**\n * {@link module:test/sub/NumberStore~NumberStore NumberStore}\n */",
+    "meta": {
+      "range": [
+        1424,
+        1456
+      ],
+      "filename": "index.js",
+      "lineno": 67,
+      "columnno": 0,
+      "code": {
+        "name": "exports.Link",
+        "type": "VariableDeclaration"
+      }
+    },
+    "description": "{@link module:test/sub/NumberStore~NumberStore NumberStore}",
+    "name": "Link",
+    "longname": "module:test.Link",
+    "kind": "constant",
+    "memberof": "module:test",
+    "scope": "static"
+  },
+  {
+    "comment": "",
+    "meta": {
+      "range": [
+        1437,
+        1455
+      ],
+      "filename": "index.js",
+      "lineno": 67,
+      "columnno": 13,
+      "code": {
+        "name": "Link",
+        "type": "Identifier",
+        "value": "NumberStore"
+      }
+    },
+    "undocumented": true,
+    "name": "Link",
+    "longname": "module:test~Link",
+    "kind": "constant",
+    "scope": "inner",
+    "memberof": "module:test",
+    "params": []
+  },
+  {
+    "comment": "/**\n * {@link module:test/sub/NumberStore~NumberStore Num}\n */",
+    "meta": {
+      "range": [
+        1493,
+        1533
+      ],
+      "filename": "index.js",
+      "lineno": 72,
+      "columnno": 0,
+      "code": {
+        "name": "exports.LinkWithText",
+        "type": "VariableDeclaration"
+      }
+    },
+    "description": "{@link module:test/sub/NumberStore~NumberStore Num}",
+    "name": "LinkWithText",
+    "longname": "module:test.LinkWithText",
+    "kind": "constant",
+    "memberof": "module:test",
+    "scope": "static"
+  },
+  {
+    "comment": "",
+    "meta": {
+      "range": [
+        1506,
+        1532
+      ],
+      "filename": "index.js",
+      "lineno": 72,
+      "columnno": 13,
+      "code": {
+        "name": "LinkWithText",
+        "type": "Identifier",
+        "value": "NumberStore"
+      }
+    },
+    "undocumented": true,
+    "name": "LinkWithText",
+    "longname": "module:test~LinkWithText",
+    "kind": "constant",
+    "scope": "inner",
+    "memberof": "module:test",
+    "params": []
+  },
+  {
+    "comment": "/**\n * {@link module:test/sub/NumberStore~NumberStore NumberStore.getNumber}\n */",
+    "meta": {
+      "range": [
+        1576,
+        1626
+      ],
+      "filename": "index.js",
+      "lineno": 77,
+      "columnno": 0,
+      "code": {
+        "name": "exports.LinkWithMemberAccessor",
+        "type": "VariableDeclaration"
+      }
+    },
+    "description": "{@link module:test/sub/NumberStore~NumberStore NumberStore.getNumber}",
+    "name": "LinkWithMemberAccessor",
+    "longname": "module:test.LinkWithMemberAccessor",
+    "kind": "constant",
+    "memberof": "module:test",
+    "scope": "static"
+  },
+  {
+    "comment": "",
+    "meta": {
+      "range": [
+        1589,
+        1625
+      ],
+      "filename": "index.js",
+      "lineno": 77,
+      "columnno": 13,
+      "code": {
+        "name": "LinkWithMemberAccessor",
+        "type": "Identifier",
+        "value": "NumberStore"
+      }
+    },
+    "undocumented": true,
+    "name": "LinkWithMemberAccessor",
+    "longname": "module:test~LinkWithMemberAccessor",
+    "kind": "constant",
+    "scope": "inner",
+    "memberof": "module:test",
+    "params": []
+  },
+  {
+    "comment": "/**\n * {@link module:test/sub/NumberStore~NumberStore Num}\n */",
+    "meta": {
+      "range": [
+        1673,
+        1730
+      ],
+      "filename": "index.js",
+      "lineno": 82,
+      "columnno": 0,
+      "code": {
+        "name": "exports.LinkWithMemberAccessorAndText",
+        "type": "VariableDeclaration"
+      }
+    },
+    "description": "{@link module:test/sub/NumberStore~NumberStore Num}",
+    "name": "LinkWithMemberAccessorAndText",
+    "longname": "module:test.LinkWithMemberAccessorAndText",
+    "kind": "constant",
+    "memberof": "module:test",
+    "scope": "static"
+  },
+  {
+    "comment": "",
+    "meta": {
+      "range": [
+        1686,
+        1729
+      ],
+      "filename": "index.js",
+      "lineno": 82,
+      "columnno": 13,
+      "code": {
+        "name": "LinkWithMemberAccessorAndText",
+        "type": "Identifier",
+        "value": "NumberStore"
+      }
+    },
+    "undocumented": true,
+    "name": "LinkWithMemberAccessorAndText",
+    "longname": "module:test~LinkWithMemberAccessorAndText",
+    "kind": "constant",
+    "scope": "inner",
+    "memberof": "module:test",
+    "params": []
+  },
+  {
     "comment": "/** @ignore */",
     "meta": {
       "range": [

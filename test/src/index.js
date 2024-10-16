@@ -60,3 +60,23 @@ export const bracketNotation = 1;
 
 /** @type {[number, [number, string], "[number, boolean]"]} */
 export const nesteedTuples = [1, [1, 'a'], '[number, boolean]'];
+
+/**
+ * {@link NumberStore}
+ */
+export const Link = NumberStore;
+
+/**
+ * {@link NumberStore Num}
+ */
+export const LinkWithText = NumberStore;
+
+/**
+ * {@link NumberStore.getNumber}
+ */
+export const LinkWithMemberAccessor = NumberStore;
+
+/**
+ * {@link NumberStore.getNumber Num}
+ */
+export const LinkWithMemberAccessorAndText = NumberStore;
