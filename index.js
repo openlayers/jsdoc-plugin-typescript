@@ -587,7 +587,7 @@ exports.astNodeVisitor = {
             replace(eventRegex);
 
             const typeRegex = new RegExp(
-              `@(.*[{<|,(!?:]\\s*)${key}([^A-Za-z].*?\}|\})`,
+              `@(.*[{<|,(!?:]\\s*)(?<!https?:|module:|event:|external:)${key}([^A-Za-z].*?\}|\})`,
               'g',
             );
             replace(typeRegex);
