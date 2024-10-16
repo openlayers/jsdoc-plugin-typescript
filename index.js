@@ -593,7 +593,7 @@ exports.astNodeVisitor = {
             replace(typeRegex);
 
             const linkWithoutTextRegex = new RegExp(
-              `@(link (?!https?))${key}(\\.[^\\s\\}]*)*(\\s*\\})`,
+              `@(link (?!https?))${key}((?:\\.[^\\s\\}]*)*\\s*\\})`,
               'g',
             );
             const linkWithTextRegex = new RegExp(
@@ -604,7 +604,7 @@ exports.astNodeVisitor = {
             // If link is without text, use key as text
             comment.value = comment.value.replace(
               linkWithoutTextRegex,
-              `@$1${key} ${key}$2$3`,
+              `@$1${key} ${key}$2`,
             );
 
             replace(linkWithTextRegex);
