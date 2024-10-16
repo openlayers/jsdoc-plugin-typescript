@@ -593,11 +593,15 @@ exports.astNodeVisitor = {
             replace(typeRegex);
 
             const linkWithoutTextRegex = new RegExp(
-              `@(link (?!https?))${key}((?:\\.[^\\s\\}]*)*\\s*\\})`,
+              `@(link (?!https?:))${key}((?:\\.[^\\s}]*)*\\s*\\})`,
+              'g',
+            );
+            const linkMemberAccessorRegex = new RegExp(
+              `@(link (?!https?:)${key})(?:\\.[^\\s}]*)*([\\s|][^}]*\\})`,
               'g',
             );
             const linkWithTextRegex = new RegExp(
-              `@(link (?!https?))${key}((?:\\.[^\\s\\}]*)*(?:\\s|\\s*\\|)[^\\}]*\\})`,
+              `@(link (?!https?:))${key}([\\s|][^}]*\\})`,
               'g',
             );
 
@@ -605,6 +609,11 @@ exports.astNodeVisitor = {
             comment.value = comment.value.replace(
               linkWithoutTextRegex,
               `@$1${key} ${key}$2`,
+            );
+            // Remove member accessors from link key
+            comment.value = comment.value.replace(
+              linkMemberAccessorRegex,
+              '@$1$2',
             );
 
             replace(linkWithTextRegex);

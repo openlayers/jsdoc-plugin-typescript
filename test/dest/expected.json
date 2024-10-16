@@ -834,6 +834,98 @@
     "params": []
   },
   {
+    "comment": "/**\n * {@link module:test/sub/NumberStore~NumberStore NumberStore.getNumber}\n */",
+    "meta": {
+      "range": [
+        1576,
+        1626
+      ],
+      "filename": "index.js",
+      "lineno": 77,
+      "columnno": 0,
+      "code": {
+        "name": "exports.LinkWithMemberAccessor",
+        "type": "VariableDeclaration"
+      }
+    },
+    "description": "{@link module:test/sub/NumberStore~NumberStore NumberStore.getNumber}",
+    "name": "LinkWithMemberAccessor",
+    "longname": "module:test.LinkWithMemberAccessor",
+    "kind": "constant",
+    "memberof": "module:test",
+    "scope": "static"
+  },
+  {
+    "comment": "",
+    "meta": {
+      "range": [
+        1589,
+        1625
+      ],
+      "filename": "index.js",
+      "lineno": 77,
+      "columnno": 13,
+      "code": {
+        "name": "LinkWithMemberAccessor",
+        "type": "Identifier",
+        "value": "NumberStore"
+      }
+    },
+    "undocumented": true,
+    "name": "LinkWithMemberAccessor",
+    "longname": "module:test~LinkWithMemberAccessor",
+    "kind": "constant",
+    "scope": "inner",
+    "memberof": "module:test",
+    "params": []
+  },
+  {
+    "comment": "/**\n * {@link module:test/sub/NumberStore~NumberStore Num}\n */",
+    "meta": {
+      "range": [
+        1673,
+        1730
+      ],
+      "filename": "index.js",
+      "lineno": 82,
+      "columnno": 0,
+      "code": {
+        "name": "exports.LinkWithMemberAccessorAndText",
+        "type": "VariableDeclaration"
+      }
+    },
+    "description": "{@link module:test/sub/NumberStore~NumberStore Num}",
+    "name": "LinkWithMemberAccessorAndText",
+    "longname": "module:test.LinkWithMemberAccessorAndText",
+    "kind": "constant",
+    "memberof": "module:test",
+    "scope": "static"
+  },
+  {
+    "comment": "",
+    "meta": {
+      "range": [
+        1686,
+        1729
+      ],
+      "filename": "index.js",
+      "lineno": 82,
+      "columnno": 13,
+      "code": {
+        "name": "LinkWithMemberAccessorAndText",
+        "type": "Identifier",
+        "value": "NumberStore"
+      }
+    },
+    "undocumented": true,
+    "name": "LinkWithMemberAccessorAndText",
+    "longname": "module:test~LinkWithMemberAccessorAndText",
+    "kind": "constant",
+    "scope": "inner",
+    "memberof": "module:test",
+    "params": []
+  },
+  {
     "comment": "/** @ignore */",
     "meta": {
       "range": [

@@ -70,3 +70,13 @@ export const Link = NumberStore;
  * {@link NumberStore Num}
  */
 export const LinkWithText = NumberStore;
+
+/**
+ * {@link NumberStore.getNumber}
+ */
+export const LinkWithMemberAccessor = NumberStore;
+
+/**
+ * {@link NumberStore.getNumber Num}
+ */
+export const LinkWithMemberAccessorAndText = NumberStore;
