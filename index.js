@@ -1,8 +1,8 @@
 require('string.prototype.matchall').shim();
-const path = require('path');
 const fs = require('fs');
-const env = require('jsdoc/env'); // eslint-disable-line import/no-unresolved
+const path = require('path');
 const addInherited = require('jsdoc/augment').addInherited; // eslint-disable-line import/no-unresolved
+const env = require('jsdoc/env'); // eslint-disable-line import/no-unresolved
 
 const importRegEx =
   /import\(["']([^"']*)["']\)(?:\.([^ \.\|\}><,\)=#\n]*))?([ \.\|\}><,\)=#\n])/g;
@@ -117,7 +117,7 @@ function getModuleInfo(modulePath, parser) {
 
   if (!moduleInfos[modulePath]) {
     if (!fileNodes[modulePath]) {
-      const file = fs.readFileSync(modulePath, 'UTF-8');
+      const file = fs.readFileSync(modulePath, {encoding: 'utf8'});
 
       fileNodes[modulePath] = parser.astBuilder.build(file, modulePath);
     }
@@ -192,162 +192,6 @@ function replaceByIndices(text, replacements) {
 
   return replacedText;
 }
-
-exports.defineTags = function (dictionary) {
-  const tags = [
-    'type',
-    'typedef',
-    'property',
-    'return',
-    'param',
-    'template',
-    'default',
-    'member',
-  ];
-
-  tags.forEach(function (tagName) {
-    const tag = dictionary.lookUp(tagName);
-    const oldOnTagText = tag.onTagText;
-
-    /**
-     * @param {string} tagText The tag text
-     * @return {string} The modified tag text
-     */
-    tag.onTagText = function (tagText) {
-      if (oldOnTagText) {
-        tagText = oldOnTagText.apply(this, arguments);
-      }
-
-      const startIndex = tagText.search('{');
-      if (startIndex === -1) {
-        return tagText;
-      }
-
-      const len = tagText.length;
-
-      /** @type {Array<[number, number, string]>} */
-      let replacements = [];
-      let openCurly = 0;
-      let openSquare = 0;
-      let openRound = 0;
-      let isWithinString = false;
-      let quoteChar = '';
-      let i = startIndex;
-      let functionStartIndex;
-
-      while (i < len) {
-        switch (tagText[i]) {
-          case '\\':
-            // Skip escaped character
-            ++i;
-            break;
-          case '"':
-          case "'":
-            if (isWithinString && quoteChar === tagText[i]) {
-              isWithinString = false;
-              quoteChar = '';
-            } else if (!isWithinString) {
-              isWithinString = true;
-              quoteChar = tagText[i];
-            }
-
-            break;
-          case ';':
-            // Replace interface-style semi-colon separators with commas
-            if (!isWithinString && openCurly > 1) {
-              const isTrailingSemiColon = /^\s*}/.test(tagText.slice(i + 1));
-
-              replacements.push([i, i + 1, isTrailingSemiColon ? '' : ',']);
-            }
-
-            break;
-          case '(':
-            if (openRound === 0) {
-              functionStartIndex = i;
-            }
-
-            ++openRound;
-
-            break;
-          case ')':
-            if (!--openRound) {
-              // If round brackets form a function
-              const returnMatch = tagText.slice(i + 1).match(/^\s*(:|=>)/);
-
-              // Replace TS inline function syntax with JSDoc
-              if (returnMatch) {
-                const functionEndIndex = i + returnMatch[0].length + 1;
-                const hasFunctionKeyword = /\bfunction\s*$/.test(
-                  tagText.slice(0, functionStartIndex),
-                );
-
-                // Filter out any replacements that are within the function
-                replacements = replacements.filter(([startIndex]) => {
-                  return startIndex < functionStartIndex || startIndex > i;
-                });
-
-                replacements.push([
-                  functionStartIndex,
-                  functionEndIndex,
-                  hasFunctionKeyword ? '():' : 'function():',
-                ]);
-              }
-
-              functionStartIndex = null;
-            }
-
-            break;
-          case '[':
-            if (
-              isWithinString ||
-              variableNameRegEx.test(tagText.charAt(i - 1))
-            ) {
-              break;
-            }
-            ++openSquare;
-            break;
-          case ']':
-            if (isWithinString) {
-              break;
-            }
-            if (!--openSquare) {
-              // Replace [type1, type2] tuples with Array
-              replacements.push([startIndex + 1, i + 1, 'Array']);
-            }
-            break;
-          case '{':
-            ++openCurly;
-            break;
-          case '}':
-            if (!--openCurly) {
-              const head = tagText.slice(0, startIndex);
-              const tail = tagText.slice(i + 1);
-
-              const replaced = replaceByIndices(
-                tagText.slice(startIndex, i + 1),
-                replacements,
-              )
-                // Replace `templateliteral` with 'templateliteral'
-                .replace(/`([^`]*)`/g, "'$1'")
-                // Bracket notation to dot notation
-                .replace(
-                  /(\w+|>|\)|\])\[(?:'([^']+)'|"([^"]+)")\]/g,
-                  '$1.$2$3',
-                );
-
-              return head + replaced + tail;
-            }
-
-            break;
-          default:
-            break;
-        }
-        ++i;
-      }
-      throw new Error("Missing closing '}'");
-    };
-  });
-};
 
 exports.astNodeVisitor = {
   visitNode: function (node, e, parser, currentSourceName) {
@@ -653,6 +497,162 @@ exports.astNodeVisitor = {
       }
     }
   },
+};
+
+exports.defineTags = function (dictionary) {
+  const tags = [
+    'type',
+    'typedef',
+    'property',
+    'return',
+    'param',
+    'template',
+    'default',
+    'member',
+  ];
+
+  tags.forEach(function (tagName) {
+    const tag = dictionary.lookUp(tagName);
+    const oldOnTagText = tag.onTagText;
+
+    /**
+     * @param {string} tagText The tag text
+     * @return {string} The modified tag text
+     */
+    tag.onTagText = function (tagText) {
+      if (oldOnTagText) {
+        tagText = oldOnTagText.apply(this, arguments);
+      }
+
+      const startIndex = tagText.search('{');
+      if (startIndex === -1) {
+        return tagText;
+      }
+
+      const len = tagText.length;
+
+      /** @type {Array<[number, number, string]>} */
+      let replacements = [];
+      let openCurly = 0;
+      let openSquare = 0;
+      let openRound = 0;
+      let isWithinString = false;
+      let quoteChar = '';
+      let i = startIndex;
+      let functionStartIndex;
+
+      while (i < len) {
+        switch (tagText[i]) {
+          case '\\':
+            // Skip escaped character
+            ++i;
+            break;
+          case '"':
+          case "'":
+            if (isWithinString && quoteChar === tagText[i]) {
+              isWithinString = false;
+              quoteChar = '';
+            } else if (!isWithinString) {
+              isWithinString = true;
+              quoteChar = tagText[i];
+            }
+
+            break;
+          case ';':
+            // Replace interface-style semi-colon separators with commas
+            if (!isWithinString && openCurly > 1) {
+              const isTrailingSemiColon = /^\s*}/.test(tagText.slice(i + 1));
+
+              replacements.push([i, i + 1, isTrailingSemiColon ? '' : ',']);
+            }
+
+            break;
+          case '(':
+            if (openRound === 0) {
+              functionStartIndex = i;
+            }
+
+            ++openRound;
+
+            break;
+          case ')':
+            if (!--openRound) {
+              // If round brackets form a function
+              const returnMatch = tagText.slice(i + 1).match(/^\s*(:|=>)/);
+
+              // Replace TS inline function syntax with JSDoc
+              if (returnMatch) {
+                const functionEndIndex = i + returnMatch[0].length + 1;
+                const hasFunctionKeyword = /\bfunction\s*$/.test(
+                  tagText.slice(0, functionStartIndex),
+                );
+
+                // Filter out any replacements that are within the function
+                replacements = replacements.filter(([startIndex]) => {
+                  return startIndex < functionStartIndex || startIndex > i;
+                });
+
+                replacements.push([
+                  functionStartIndex,
+                  functionEndIndex,
+                  hasFunctionKeyword ? '():' : 'function():',
+                ]);
+              }
+
+              functionStartIndex = null;
+            }
+
+            break;
+          case '[':
+            if (
+              isWithinString ||
+              variableNameRegEx.test(tagText.charAt(i - 1))
+            ) {
+              break;
+            }
+            ++openSquare;
+            break;
+          case ']':
+            if (isWithinString) {
+              break;
+            }
+            if (!--openSquare) {
+              // Replace [type1, type2] tuples with Array
+              replacements.push([startIndex + 1, i + 1, 'Array']);
+            }
+            break;
+          case '{':
+            ++openCurly;
+            break;
+          case '}':
+            if (!--openCurly) {
+              const head = tagText.slice(0, startIndex);
+              const tail = tagText.slice(i + 1);
+
+              const replaced = replaceByIndices(
+                tagText.slice(startIndex, i + 1),
+                replacements,
+              )
+                // Replace `templateliteral` with 'templateliteral'
+                .replace(/`([^`]*)`/g, "'$1'")
+                // Bracket notation to dot notation
+                .replace(
+                  /(\w+|>|\)|\])\[(?:'([^']+)'|"([^"]+)")\]/g,
+                  '$1.$2$3',
+                );
+
+              return head + replaced + tail;
+            }
+
+            break;
+          default:
+            break;
+        }
+        ++i;
+      }
+      throw new Error("Missing closing '}'");
+    };
+  });
 };
 
 exports.handlers = {
