@@ -1,7 +1,7 @@
 const spawn = require('node:child_process').spawn;
 const path = require('node:path');
-const fse = require('fs-extra');
 const diff = require('deep-diff-pizza');
+const fse = require('fs-extra');
 
 async function main() {
   await jsdoc();
@@ -21,7 +21,7 @@ function jsdoc() {
     const child = spawn(
       'npx',
       ['jsdoc', '--configure', 'test/template/config.json'],
-      {cwd: getPath('..'), stdio: [null, 'inherit', null]}
+      {cwd: getPath('..'), stdio: [null, 'inherit', null]},
     );
 
     child.stderr.on('data', (data) => {
@@ -49,7 +49,7 @@ if (require.main === module) {
       const message = JSON.stringify(diffs, null, 2);
       process.stderr.write(
         `actual.json does not match expected.json: \n${message}\n`,
-        () => process.exit(1)
+        () => process.exit(1),
       );
     })
     .catch((err) => process.stderr.write(err.message, () => process.exit(1)));

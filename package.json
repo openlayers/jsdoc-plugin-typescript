@@ -4,7 +4,7 @@
   "description": "Plugin to make TypeScript's JSDoc type annotations work with JSDoc",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint index.js",
+    "lint": "eslint index.js test",
     "pretest": "npm run lint",
     "test": "node test/test.js"
   },
@@ -31,8 +31,5 @@
     "eslint-config-openlayers": "^20.0.0",
     "fs-extra": "^11.1.0",
     "jsdoc": "^4.0.2"
-  },
-  "eslintConfig": {
-    "extends": "openlayers"
   }
 }
