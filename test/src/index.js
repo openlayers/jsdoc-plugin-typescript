@@ -61,6 +61,12 @@ export const bracketNotation = 1;
 /** @type {[number, [number, string], "[number, boolean]"]} */
 export const nesteedTuples = [1, [1, 'a'], '[number, boolean]'];
 
+/** @type {{ foo?: string; bar: string?, baz ? : string? }} */
+export const optionalProperties = {
+  foo: 'bar',
+  bar: null,
+};
+
 /**
  * {@link NumberStore}
  */

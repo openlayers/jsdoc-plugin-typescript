@@ -157,6 +157,22 @@ To:
 
 Also removes trailing commas from object types.
 
+### Optional properties
+
+```js
+/**
+ * @type {{a: number, b?: string}}
+ */
+```
+
+To:
+
+```js
+/**
+ * @type {{a: number, b: string}}
+ */
+```
+
 ### TS inline function syntax
 
 ```js
