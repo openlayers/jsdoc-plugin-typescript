@@ -16,8 +16,6 @@ To configure JSDoc to use the plugin, add the following to the JSDoc configurati
 ],
 ```
 
-See http://usejsdoc.org/about-configuring-jsdoc.html for more details on how to configure JSDoc.
-
 ## What this plugin does
 
 When using the `class` keyword for defining classes (required by TypeScript), JSDoc requires `@classdesc` and `@extends` annotations. With this plugin, no `@classdesc` and `@extends` annotations are needed.
