@@ -16,7 +16,7 @@ To configure JSDoc to use the plugin, add the following to the JSDoc configurati
 ],
 ```
 
-See http://usejsdoc.org/about-configuring-jsdoc.html for more details on how to configure JSDoc.
+See https://jsdoc.app/about-configuring-jsdoc for more details on how to configure JSDoc.
 
 ## What this plugin does
 
