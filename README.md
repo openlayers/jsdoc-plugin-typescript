@@ -205,6 +205,22 @@ To:
  */
 ```
 
+### Intersection types
+
+```js
+/**
+ * @type {A & B}
+ */
+```
+
+To:
+
+```js
+/**
+ * @type {A | B}
+ */
+```
+
 ## Module id resolution
 
 For resolving module ids, this plugin mirrors the method used by JSDoc:
