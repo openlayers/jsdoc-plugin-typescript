@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - name: Clone Repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Set Node.js Version
         uses: actions/setup-node@v6
