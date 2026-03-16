@@ -61,6 +61,9 @@ export const bracketNotation = 1;
 /** @type {[number, [number, string], "[number, boolean]"]} */
 export const nesteedTuples = [1, [1, 'a'], '[number, boolean]'];
 
+/** @type {'&' | "|" & '?'} */
+export const unionIntersections = '&';
+
 /**
  * {@link NumberStore}
  */
