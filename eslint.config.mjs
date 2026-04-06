@@ -5,4 +5,9 @@ import openlayers from 'eslint-config-openlayers';
  */
 export default [
   ...openlayers,
+  {
+    rules: {
+      'jsdoc/reject-function-type': 'off'
+    }
+  }
 ];

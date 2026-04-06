@@ -929,8 +929,8 @@
     "comment": "/** @ignore */",
     "meta": {
       "range": [
-        434,
-        465
+        411,
+        442
       ],
       "filename": "LeadingComments.js",
       "lineno": 14,
@@ -950,8 +950,8 @@
     "comment": "/**\n * Doclet\n */",
     "meta": {
       "range": [
-        441,
-        465
+        418,
+        442
       ],
       "filename": "LeadingComments.js",
       "lineno": 14,
