@@ -1,8 +1,8 @@
 require('string.prototype.matchall').shim();
 const fs = require('fs');
 const path = require('path');
-const addInherited = require('jsdoc/augment').addInherited; // eslint-disable-line import/no-unresolved
-const env = require('jsdoc/env'); // eslint-disable-line import/no-unresolved
+const addInherited = require('jsdoc/augment').addInherited;
+const env = require('jsdoc/env');
 
 const importRegEx =
   /import\(["']([^"']*)["']\)(?:\.([^ \.\|\}><,\)=#\n]*))?([ \.\|\}><,\)=#\n])/g;
