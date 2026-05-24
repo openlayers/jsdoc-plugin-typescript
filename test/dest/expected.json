@@ -742,14 +742,66 @@
     "params": []
   },
   {
-    "comment": "/**\n * {@link module:test/sub/NumberStore~NumberStore NumberStore}\n */",
+    "comment": "/** @type {'&' | \"|\" & '?'} */",
     "meta": {
       "range": [
         1424,
-        1456
+        1462
       ],
       "filename": "index.js",
-      "lineno": 67,
+      "lineno": 65,
+      "columnno": 0,
+      "code": {
+        "name": "exports.unionIntersections",
+        "type": "VariableDeclaration"
+      }
+    },
+    "type": {
+      "names": [
+        "'&'",
+        "\"|\"",
+        "'?'"
+      ]
+    },
+    "name": "unionIntersections",
+    "longname": "module:test.unionIntersections",
+    "kind": "constant",
+    "memberof": "module:test",
+    "scope": "static"
+  },
+  {
+    "comment": "",
+    "meta": {
+      "range": [
+        1437,
+        1461
+      ],
+      "filename": "index.js",
+      "lineno": 65,
+      "columnno": 13,
+      "code": {
+        "name": "unionIntersections",
+        "type": "Literal",
+        "value": "&"
+      }
+    },
+    "undocumented": true,
+    "name": "unionIntersections",
+    "longname": "module:test~unionIntersections",
+    "kind": "constant",
+    "scope": "inner",
+    "memberof": "module:test",
+    "params": []
+  },
+  {
+    "comment": "/**\n * {@link module:test/sub/NumberStore~NumberStore NumberStore}\n */",
+    "meta": {
+      "range": [
+        1495,
+        1527
+      ],
+      "filename": "index.js",
+      "lineno": 70,
       "columnno": 0,
       "code": {
         "name": "exports.Link",
@@ -767,11 +819,11 @@
     "comment": "",
     "meta": {
       "range": [
-        1437,
-        1455
+        1508,
+        1526
       ],
       "filename": "index.js",
-      "lineno": 67,
+      "lineno": 70,
       "columnno": 13,
       "code": {
         "name": "Link",
@@ -791,11 +843,11 @@
     "comment": "/**\n * {@link module:test/sub/NumberStore~NumberStore Num}\n */",
     "meta": {
       "range": [
-        1493,
-        1533
+        1564,
+        1604
       ],
       "filename": "index.js",
-      "lineno": 72,
+      "lineno": 75,
       "columnno": 0,
       "code": {
         "name": "exports.LinkWithText",
@@ -813,11 +865,11 @@
     "comment": "",
     "meta": {
       "range": [
-        1506,
-        1532
+        1577,
+        1603
       ],
       "filename": "index.js",
-      "lineno": 72,
+      "lineno": 75,
       "columnno": 13,
       "code": {
         "name": "LinkWithText",
@@ -837,11 +889,11 @@
     "comment": "/**\n * {@link module:test/sub/NumberStore~NumberStore NumberStore.getNumber}\n */",
     "meta": {
       "range": [
-        1576,
-        1626
+        1647,
+        1697
       ],
       "filename": "index.js",
-      "lineno": 77,
+      "lineno": 80,
       "columnno": 0,
       "code": {
         "name": "exports.LinkWithMemberAccessor",
@@ -859,11 +911,11 @@
     "comment": "",
     "meta": {
       "range": [
-        1589,
-        1625
+        1660,
+        1696
       ],
       "filename": "index.js",
-      "lineno": 77,
+      "lineno": 80,
       "columnno": 13,
       "code": {
         "name": "LinkWithMemberAccessor",
@@ -883,11 +935,11 @@
     "comment": "/**\n * {@link module:test/sub/NumberStore~NumberStore Num}\n */",
     "meta": {
       "range": [
-        1673,
-        1730
+        1744,
+        1801
       ],
       "filename": "index.js",
-      "lineno": 82,
+      "lineno": 85,
       "columnno": 0,
       "code": {
         "name": "exports.LinkWithMemberAccessorAndText",
@@ -905,11 +957,11 @@
     "comment": "",
     "meta": {
       "range": [
-        1686,
-        1729
+        1757,
+        1800
       ],
       "filename": "index.js",
-      "lineno": 82,
+      "lineno": 85,
       "columnno": 13,
       "code": {
         "name": "LinkWithMemberAccessorAndText",

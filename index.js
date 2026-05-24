@@ -547,6 +547,13 @@ exports.defineTags = function (dictionary) {
             // Skip escaped character
             ++i;
             break;
+          case '&':
+            // Intersection `&` to union `|`
+            if (!isWithinString && openCurly >= 1) {
+              replacements.push([i, i + 1, '|']);
+            }
+
+            break;
           case '"':
           case "'":
             if (isWithinString && quoteChar === tagText[i]) {
